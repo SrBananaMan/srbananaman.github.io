@@ -2,11 +2,518 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>SrBananaMan</title>
+
+    <meta
+        name="description"
+        content="Projects, Nintendo 64 recompilations, and videos by SrBananaMan."
+    >
+
+    <style>
+        :root {
+            --background: #090b12;
+            --background-secondary: #111522;
+            --card: rgba(24, 29, 45, 0.82);
+            --text: #ffffff;
+            --text-secondary: #aeb6cc;
+            --accent: #75d66f;
+            --accent-hover: #93eb8e;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(
+                    circle at top,
+                    rgba(65, 130, 75, 0.22),
+                    transparent 38%
+                ),
+                var(--background);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            width: min(1100px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 28px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+        }
+
+        main {
+            flex: 1;
+        }
+
+        .hero {
+            width: min(900px, calc(100% - 40px));
+            min-height: 70vh;
+            margin: 0 auto;
+            padding: 80px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        h1 {
+            max-width: 800px;
+            font-size: clamp(3rem, 9vw, 6.5rem);
+            line-height: 0.95;
+            letter-spacing: -0.06em;
+        }
+
+        .tagline {
+            margin-top: 18px;
+            color: var(--accent);
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            transform: translateY(8px);
+        }
+
+        .hero-description {
+            max-width: 650px;
+            margin-top: 26px;
+            color: var(--text-secondary);
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            line-height: 1.7;
+        }
+
+        .main-button {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 210px;
+            margin-top: 38px;
+            padding: 17px 34px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 999px;
+            color: #081008;
+            background: var(--accent);
+            box-shadow: 0 15px 45px rgba(76, 190, 83, 0.25);
+            font-size: 1.1rem;
+            font-weight: 900;
+            transition:
+                transform 0.2s ease,
+                background 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .main-button:hover {
+            transform: translateY(-3px);
+            background: var(--accent-hover);
+            box-shadow: 0 20px 55px rgba(76, 190, 83, 0.38);
+        }
+
+        .projects {
+            width: min(1000px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 80px 0 120px;
+        }
+
+        .section-heading {
+            margin-bottom: 28px;
+            text-align: center;
+        }
+
+        .section-heading h2 {
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            letter-spacing: -0.04em;
+        }
+
+        .section-heading p {
+            margin-top: 10px;
+            color: var(--text-secondary);
+        }
+
+        .project-card {
+            padding: clamp(28px, 5vw, 52px);
+            border: 1px solid var(--border);
+            border-radius: 26px;
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(94, 175, 91, 0.12),
+                    transparent 50%
+                ),
+                var(--card);
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.28);
+            backdrop-filter: blur(14px);
+        }
+
+        .project-label {
+            color: var(--accent);
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .project-card h3 {
+            margin-top: 12px;
+            font-size: clamp(2rem, 6vw, 3.8rem);
+            letter-spacing: -0.05em;
+        }
+
+        .project-card p {
+            max-width: 720px;
+            margin-top: 18px;
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .project-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 30px;
+        }
+
+        .project-link {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 13px 21px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.06);
+            font-weight: 700;
+            cursor: pointer;
+            transition:
+                transform 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .project-link:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.11);
+        }
+
+        .download-link {
+            color: #081008;
+            background: var(--accent);
+            border-color: transparent;
+        }
+
+        .download-link:hover {
+            background: var(--accent-hover);
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.18);
+        }
+
+        .footer-content {
+            width: min(1000px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 34px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .footer-text {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-link {
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-weight: 700;
+            transition:
+                color 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .social-link:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        @media (max-width: 650px) {
+            header {
+                padding-top: 22px;
+            }
+
+            .hero {
+                min-height: 65vh;
+                padding: 60px 0;
+            }
+
+            .projects {
+                padding-bottom: 80px;
+            }
+
+            .project-actions {
+                flex-direction: column;
+            }
+
+            .project-link {
+                width: 100%;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .social-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <h1>SrBananaMan</h1>
-    <p>Welcome to my website! d</p>
+    <div class="page">
+        <header>
+            <a class="logo" href="#">
+                SrBananaMan
+            </a>
+
+            <a class="nav-link" href="#recomps">
+                Projects
+            </a>
+        </header>
+
+        <main>
+            <section class="hero">
+                <h1>
+                    SrBananaMan
+                </h1>
+
+                <p class="tagline">
+                    Developer · Gamer · Modder
+                </p>
+
+                <p class="hero-description">
+                    See my cool stuff here. Not much to look at yet.
+                </p>
+
+                <a class="main-button" href="#recomps">
+                    Recomps
+                </a>
+            </section>
+
+            <section class="projects" id="recomps">
+                <div class="section-heading">
+                    <h2>Recomps</h2>
+
+                    <p>
+                        Native recompilations of N64 games.
+                    </p>
+                </div>
+
+                <article class="project-card">
+                    <span class="project-label">
+                        Featured Project
+                    </span>
+
+                    <h3>
+                        Harvest Moon 64 Recompiled
+                    </h3>
+
+                    <p>
+                        PC port of Harvest Moon 64 made using
+                        N64: Recompiled for Windows, Linux, and macOS.
+                    </p>
+
+                    <div class="project-actions">
+                        <a
+                            class="project-link"
+                            href="https://github.com/HarvestMoon64Recomp/HarvestMoon64Recomp"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            View on GitHub
+                        </a>
+
+                        <a
+                            class="project-link download-link"
+                            id="harvest-moon-download"
+                            href="https://github.com/HarvestMoon64Recomp/HarvestMoon64Recomp/releases/latest"
+                        >
+                            Detecting Platform...
+                        </a>
+                    </div>
+                </article>
+            </section>
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <p class="footer-text">
+                    © 2026 SrBananaMan
+                </p>
+
+                <div class="social-links">
+                    <a
+                        class="social-link"
+                        href="https://github.com/SrBananaMan"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        GitHub
+                    </a>
+
+                    <a
+                        class="social-link"
+                        href="https://www.youtube.com/@SrBananaMan64"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        YouTube
+                    </a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const downloadButton =
+            document.getElementById("harvest-moon-download");
+
+        const repositoryUrl =
+            "https://github.com/HarvestMoon64Recomp/HarvestMoon64Recomp";
+
+        const latestDownloadUrl =
+            `${repositoryUrl}/releases/latest/download/`;
+
+        function setDownloadButton() {
+            const userAgent = navigator.userAgent.toLowerCase();
+
+            const platform = (
+                navigator.userAgentData?.platform ||
+                navigator.platform ||
+                ""
+            ).toLowerCase();
+
+            let fileName = "";
+            let platformName = "";
+
+            const isWindows =
+                platform.includes("win") ||
+                userAgent.includes("windows");
+
+            const isMacOS =
+                platform.includes("mac") ||
+                userAgent.includes("macintosh") ||
+                userAgent.includes("mac os");
+
+            const isLinux =
+                platform.includes("linux") ||
+                userAgent.includes("linux");
+
+            const isArm64 =
+                platform.includes("arm") ||
+                platform.includes("aarch64") ||
+                userAgent.includes("arm64") ||
+                userAgent.includes("aarch64");
+
+            if (isWindows) {
+                fileName =
+                    "HarvestMoon64Recompiled-v1.2.1-Windows.zip";
+
+                platformName = "Windows";
+            } else if (isMacOS) {
+                fileName =
+                    "HarvestMoon64Recompiled-v1.2.1-macOS.zip";
+
+                platformName = "macOS";
+            } else if (isLinux && isArm64) {
+                fileName =
+                    "HarvestMoon64Recompiled-v1.2.1-Linux-ARM64.zip";
+
+                platformName = "Linux ARM64";
+            } else if (isLinux) {
+                fileName =
+                    "HarvestMoon64Recompiled-v1.2.1-Linux-X64.zip";
+
+                platformName = "Linux";
+            }
+
+            if (fileName) {
+                downloadButton.href =
+                    latestDownloadUrl + fileName;
+
+                downloadButton.textContent =
+                    `Download for ${platformName}`;
+            } else {
+                downloadButton.href =
+                    `${repositoryUrl}/releases/latest`;
+
+                downloadButton.textContent =
+                    "Choose Download";
+            }
+        }
+
+        setDownloadButton();
+    </script>
 </body>
 </html>
