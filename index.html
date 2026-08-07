@@ -260,7 +260,18 @@
             border-top: 1px solid var(--border);
             background: rgba(0, 0, 0, 0.18);
         }
+        .download-count {
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 600;
 
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
         .footer-content {
             width: min(1000px, calc(100% - 40px));
             margin: 0 auto;
@@ -404,6 +415,10 @@
                             Detecting Platform...
                         </a>
                     </div>
+                    <div class="download-count">
+                        <span>↓</span>
+                        <span id="hm64-download-count">Loading download count...</span>
+                    </div>
                 </article>
             </section>
         </main>
@@ -516,6 +531,45 @@
         }
 
         setDownloadButton();
+    </script>
+    <script>
+        async function loadHM64DownloadCount() {
+            const countElement =
+                document.getElementById("hm64-download-count");
+
+            const apiUrl =
+                "https://api.github.com/repos/" +
+                "HarvestMoon64Recomp/HarvestMoon64Recomp/releases" +
+                "?per_page=100";
+
+            try {
+                const response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    throw new Error("GitHub API request failed");
+                }
+
+                const releases = await response.json();
+
+                let totalDownloads = 0;
+
+                for (const release of releases) {
+                    for (const asset of release.assets) {
+                        totalDownloads += asset.download_count;
+                    }
+                }
+
+                countElement.textContent = `${totalDownloads.toLocaleString()} downloads`;
+
+            } catch (error) {
+                console.error(error);
+
+                countElement.textContent =
+                    "Download count unavailable";
+            }
+        }
+
+        loadHM64DownloadCount();
     </script>
 </body>
 </html>
