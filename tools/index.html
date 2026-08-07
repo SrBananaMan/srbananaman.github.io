@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
 
@@ -30,11 +31,15 @@
         :root {
             --background: #090b12;
             --card: rgba(24, 29, 45, 0.82);
+
             --text: #ffffff;
             --text-secondary: #aeb6cc;
+
             --accent: #75d66f;
             --accent-hover: #93eb8e;
+
             --border: rgba(255, 255, 255, 0.1);
+
             --error: #ff8080;
         }
 
@@ -99,14 +104,17 @@
 
         .nav-links {
             display: flex;
+            align-items: center;
             gap: 24px;
         }
 
         .nav-link {
             color: var(--text-secondary);
+
             font-weight: 600;
 
-            transition: color 0.2s ease;
+            transition:
+                color 0.2s ease;
         }
 
         .nav-link:hover {
@@ -128,7 +136,8 @@
         }
 
         .page-heading h1 {
-            font-size: clamp(3rem, 8vw, 5.5rem);
+            font-size:
+                clamp(3rem, 8vw, 5.5rem);
 
             letter-spacing: -0.06em;
         }
@@ -148,10 +157,19 @@
             gap: 28px;
         }
 
-        .tool-card {
-            padding: clamp(28px, 5vw, 48px);
+        /*
+         * ============================================================
+         * TOOL CARDS
+         * ============================================================
+         */
 
-            border: 1px solid var(--border);
+        .tool-card {
+            padding:
+                clamp(28px, 5vw, 48px);
+
+            border:
+                1px solid
+                var(--border);
 
             border-radius: 26px;
 
@@ -169,7 +187,8 @@
         }
 
         .tool-card h2 {
-            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-size:
+                clamp(2rem, 5vw, 3.2rem);
 
             letter-spacing: -0.05em;
         }
@@ -184,6 +203,7 @@
 
         .tool-description a {
             color: var(--accent);
+
             font-weight: 700;
         }
 
@@ -192,14 +212,18 @@
         }
 
         /*
-         * Drop zones
+         * ============================================================
+         * DROP ZONES
+         * ============================================================
          */
 
         .drop-zone {
             margin-top: 30px;
             padding: 45px 24px;
 
-            border: 2px dashed var(--border);
+            border:
+                2px dashed
+                var(--border);
 
             border-radius: 18px;
 
@@ -223,7 +247,8 @@
             background:
                 rgba(117, 214, 111, 0.07);
 
-            transform: translateY(-2px);
+            transform:
+                translateY(-2px);
         }
 
         .drop-icon {
@@ -253,7 +278,9 @@
         }
 
         /*
-         * Status messages
+         * ============================================================
+         * STATUS
+         * ============================================================
          */
 
         .status {
@@ -277,7 +304,9 @@
         }
 
         /*
-         * Recomp hash output
+         * ============================================================
+         * HASH RESULT
+         * ============================================================
          */
 
         .hash-result {
@@ -287,7 +316,9 @@
 
             padding: 20px;
 
-            border: 1px solid var(--border);
+            border:
+                1px solid
+                var(--border);
 
             border-radius: 14px;
 
@@ -299,7 +330,7 @@
             display: block;
         }
 
-        .hash-result-label {
+        .result-label {
             color: var(--text-secondary);
 
             font-size: 0.88rem;
@@ -324,7 +355,11 @@
                 monospace;
 
             font-size:
-                clamp(0.82rem, 2.5vw, 1rem);
+                clamp(
+                    0.82rem,
+                    2.5vw,
+                    1rem
+                );
 
             font-weight: 700;
 
@@ -334,18 +369,27 @@
             overflow-wrap: anywhere;
         }
 
-        .hash-actions {
-            display: flex;
+        /*
+         * ============================================================
+         * BUTTONS
+         * ============================================================
+         */
 
-            gap: 12px;
+        .result-actions {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 10px;
 
             margin-top: 18px;
         }
 
-        .copy-button {
-            padding: 11px 17px;
+        .small-button {
+            padding: 10px 16px;
 
-            border: 1px solid var(--border);
+            border:
+                1px solid
+                var(--border);
 
             border-radius: 10px;
 
@@ -363,92 +407,258 @@
                 transform 0.2s ease;
         }
 
-        .copy-button:hover {
+        .small-button:hover {
             background:
                 rgba(255, 255, 255, 0.11);
 
-            transform: translateY(-2px);
+            transform:
+                translateY(-2px);
         }
 
         /*
-         * Embedded n64sym
+         * ============================================================
+         * N64SYM OPTIONS
+         * ============================================================
          */
 
-        .n64sym-container {
-            margin-top: 28px;
-
-            overflow: hidden;
-
-            border: 1px solid var(--border);
-
-            border-radius: 16px;
-
-            background: #202225;
-        }
-
-        .n64sym-frame {
-            display: block;
-
-            width: 100%;
-            height: 570px;
-
-            border: 0;
-
-            background: #202225;
-        }
-
-        .n64sym-footer {
+        .n64sym-options {
             display: flex;
-
-            justify-content: space-between;
             align-items: center;
 
-            gap: 18px;
+            margin-top: 18px;
+        }
 
-            padding: 14px 17px;
+        .checkbox-option {
+            display: flex;
+            align-items: center;
 
-            border-top:
-                1px solid var(--border);
+            gap: 9px;
 
             color: var(--text-secondary);
 
-            background:
-                rgba(0, 0, 0, 0.18);
+            font-size: 0.9rem;
 
-            font-size: 0.85rem;
+            cursor: pointer;
+            user-select: none;
         }
 
-        .n64sym-source {
+        .checkbox-option input {
+            width: 17px;
+            height: 17px;
+
+            accent-color:
+                var(--accent);
+        }
+
+        /*
+         * ============================================================
+         * N64SYM PROGRESS
+         * ============================================================
+         */
+
+        .n64sym-progress {
+            display: none;
+
+            margin-top: 24px;
+        }
+
+        .n64sym-progress.visible {
+            display: block;
+        }
+
+        .progress-header {
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            gap: 16px;
+
+            margin-bottom: 9px;
+
+            color:
+                var(--text-secondary);
+
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 7px;
+
+            overflow: hidden;
+
+            border-radius: 999px;
+
+            background:
+                rgba(255, 255, 255, 0.07);
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+
+            border-radius: inherit;
+
+            background:
+                var(--accent);
+
+            transition:
+                width 0.12s ease;
+        }
+
+        /*
+         * ============================================================
+         * N64SYM RESULTS
+         * ============================================================
+         */
+
+        .n64sym-results {
+            display: none;
+
+            margin-top: 22px;
+
+            overflow: hidden;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 14px;
+
+            background:
+                rgba(0, 0, 0, 0.18);
+        }
+
+        .n64sym-results.visible {
+            display: block;
+        }
+
+        .results-header {
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            gap: 16px;
+
+            padding: 14px 16px;
+
+            border-bottom:
+                1px solid
+                var(--border);
+        }
+
+        .result-count {
+            color:
+                var(--text-secondary);
+
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .results-buttons {
+            display: flex;
+
+            gap: 8px;
+        }
+
+        .n64sym-output {
+            width: 100%;
+
+            max-height: 420px;
+
+            padding: 18px;
+
+            overflow: auto;
+
+            color: var(--text);
+
+            font-family:
+                "SFMono-Regular",
+                Consolas,
+                "Liberation Mono",
+                monospace;
+
+            font-size: 0.84rem;
+
+            line-height: 1.6;
+
+            white-space: pre;
+        }
+
+        /*
+         * ============================================================
+         * CREDIT
+         * ============================================================
+         */
+
+        .tool-credit {
+            margin-top: 18px;
+
+            color:
+                var(--text-secondary);
+
+            font-size: 0.83rem;
+        }
+
+        .tool-credit a {
             color: var(--accent);
 
             font-weight: 700;
         }
 
-        .n64sym-source:hover {
-            color: var(--accent-hover);
+        .tool-credit a:hover {
+            color:
+                var(--accent-hover);
         }
 
+        /*
+         * ============================================================
+         * FOOTER
+         * ============================================================
+         */
+
         footer {
-            border-top: 1px solid var(--border);
+            border-top:
+                1px solid
+                var(--border);
 
             background:
                 rgba(0, 0, 0, 0.18);
         }
 
         .footer-content {
-            width: min(1000px, calc(100% - 40px));
+            width:
+                min(
+                    1000px,
+                    calc(100% - 40px)
+                );
 
             margin: 0 auto;
             padding: 34px 0;
 
-            color: var(--text-secondary);
+            color:
+                var(--text-secondary);
 
             text-align: center;
 
             font-size: 0.92rem;
         }
 
+        /*
+         * ============================================================
+         * MOBILE
+         * ============================================================
+         */
+
         @media (max-width: 650px) {
+
             header {
                 padding-top: 22px;
             }
@@ -461,20 +671,30 @@
                 padding: 36px 18px;
             }
 
-            .n64sym-frame {
-                height: 650px;
-            }
-
-            .n64sym-footer {
+            .results-header {
                 flex-direction: column;
 
                 align-items: flex-start;
             }
+
+            .results-buttons {
+                width: 100%;
+            }
+
+            .results-buttons button {
+                flex: 1;
+            }
+
         }
     </style>
 </head>
 
+
 <body>
+
+    <!-- ============================================================
+         HEADER
+         ============================================================ -->
 
     <header>
 
@@ -506,6 +726,11 @@
     </header>
 
 
+
+    <!-- ============================================================
+         MAIN
+         ============================================================ -->
+
     <main>
 
         <div class="page-heading">
@@ -524,9 +749,9 @@
         <div class="tools-list">
 
 
-            <!-- ==================================================
+            <!-- ====================================================
                  ROM CONVERTER
-                 ================================================== -->
+                 ==================================================== -->
 
             <article class="tool-card">
 
@@ -581,9 +806,9 @@
 
 
 
-            <!-- ==================================================
+            <!-- ====================================================
                  RECOMP HASH
-                 ================================================== -->
+                 ==================================================== -->
 
             <article class="tool-card">
 
@@ -592,8 +817,9 @@
                 </h2>
 
                 <p class="tool-description">
-                    Get the XXH3 64-bit ROM hash and internal
-                    name used by N64: Recompiled projects.
+                    Get the XXH3 64-bit ROM hash and
+                    internal name used by
+                    N64: Recompiled projects.
                 </p>
 
 
@@ -637,7 +863,7 @@
                     id="hash-result"
                 >
 
-                    <div class="hash-result-label">
+                    <div class="result-label">
                         N64 Recomp Game Info
                     </div>
 
@@ -647,10 +873,10 @@
                     ></pre>
 
 
-                    <div class="hash-actions">
+                    <div class="result-actions">
 
                         <button
-                            class="copy-button"
+                            class="small-button"
                             id="copy-hash-button"
                             type="button"
                         >
@@ -665,9 +891,9 @@
 
 
 
-            <!-- ==================================================
+            <!-- ====================================================
                  N64SYM
-                 ================================================== -->
+                 ==================================================== -->
 
             <article class="tool-card">
 
@@ -676,48 +902,155 @@
                 </h2>
 
                 <p class="tool-description">
-                    Scan a Nintendo 64 ROM or RAM dump and identify
-                    known libultra symbols.
+                    Scan a Nintendo 64 ROM or RAM dump
+                    and identify known libultra symbols.
+                </p>
 
-                    Created by
+
+                <div
+                    class="drop-zone"
+                    id="n64sym-drop-zone"
+                    tabindex="0"
+                    role="button"
+                >
+
+                    <div class="drop-icon">
+                        ⌕
+                    </div>
+
+                    <div class="drop-title">
+                        Drop ROM Here
+                    </div>
+
+                    <div class="drop-subtitle">
+                        or click to choose a Nintendo 64 ROM
+                    </div>
+
+                </div>
+
+
+                <input
+                    id="n64sym-file-input"
+                    type="file"
+                    accept=".z64,.n64,.v64"
+                >
+
+
+                <div class="n64sym-options">
+
+                    <label class="checkbox-option">
+
+                        <input
+                            id="n64sym-thorough"
+                            type="checkbox"
+                        >
+
+                        <span>
+                            Thorough scan
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <div
+                    class="n64sym-progress"
+                    id="n64sym-progress"
+                >
+
+                    <div class="progress-header">
+
+                        <span
+                            id="n64sym-progress-text"
+                        >
+                            Preparing...
+                        </span>
+
+                        <span
+                            id="n64sym-progress-percent"
+                        >
+                            0%
+                        </span>
+
+                    </div>
+
+
+                    <div class="progress-bar">
+
+                        <div
+                            class="progress-fill"
+                            id="n64sym-progress-fill"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+                <p
+                    class="status"
+                    id="n64sym-status"
+                ></p>
+
+
+                <div
+                    class="n64sym-results"
+                    id="n64sym-results"
+                >
+
+                    <div class="results-header">
+
+                        <span
+                            class="result-count"
+                            id="n64sym-result-count"
+                        >
+                            0 symbols found
+                        </span>
+
+
+                        <div class="results-buttons">
+
+                            <button
+                                class="small-button"
+                                id="n64sym-copy-button"
+                                type="button"
+                            >
+                                Copy
+                            </button>
+
+                            <button
+                                class="small-button"
+                                id="n64sym-download-button"
+                                type="button"
+                            >
+                                Download
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <pre
+                        class="n64sym-output"
+                        id="n64sym-output"
+                    ></pre>
+
+                </div>
+
+
+                <p class="tool-credit">
+                    Symbol identification powered by
+
                     <a
                         href="https://github.com/shygoo/n64sym"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        shygoo
+                        n64sym by shygoo
                     </a>.
                 </p>
-
-
-                <div class="n64sym-container">
-
-                    <iframe
-                        class="n64sym-frame"
-                        src="/tools/n64sym/"
-                        title="n64sym by shygoo"
-                        loading="lazy"
-                    ></iframe>
-
-
-                    <div class="n64sym-footer">
-
-                        <span>
-                            n64sym by shygoo
-                        </span>
-
-                        <a
-                            class="n64sym-source"
-                            href="https://github.com/shygoo/n64sym"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            View Source
-                        </a>
-
-                    </div>
-
-                </div>
 
             </article>
 
@@ -726,6 +1059,11 @@
 
     </main>
 
+
+
+    <!-- ============================================================
+         FOOTER
+         ============================================================ -->
 
     <footer>
 
@@ -737,11 +1075,23 @@
 
 
 
-    <!-- ==========================================================
-         COMMON ROM FUNCTIONS
-         ========================================================== -->
+    <!-- ============================================================
+         SHYGOO CRC32
+         ============================================================ -->
+
+    <script src="/tools/n64sym/js/crc32.js"></script>
+
+
+
+    <!-- ============================================================
+         COMMON N64 FUNCTIONS + ROM CONVERTER
+         ============================================================ -->
 
     <script>
+
+        /*
+         * Detect N64 ROM byte order.
+         */
 
         function detectRomFormat(bytes) {
 
@@ -751,7 +1101,7 @@
 
 
             /*
-             * .z64
+             * Big endian .z64
              */
 
             if (
@@ -765,7 +1115,7 @@
 
 
             /*
-             * .n64
+             * Little endian .n64
              */
 
             if (
@@ -779,7 +1129,7 @@
 
 
             /*
-             * .v64
+             * Byte-swapped .v64
              */
 
             if (
@@ -793,20 +1143,23 @@
 
 
             return null;
+
         }
 
 
 
         /*
-         * ========================================================
-         * Z64 / N64 CONVERTER
-         * ========================================================
+         * Reverse every 32-bit word.
+         *
+         * .z64 <-> .n64
          */
 
         function reverseWords(input) {
 
             const output =
-                new Uint8Array(input.length);
+                new Uint8Array(
+                    input.length
+                );
 
 
             let i = 0;
@@ -846,6 +1199,7 @@
 
 
             return output;
+
         }
 
 
@@ -859,7 +1213,7 @@
                 originalName.lastIndexOf(".");
 
 
-            const baseName =
+            const base =
                 dot === -1
                     ? originalName
                     : originalName.substring(
@@ -869,45 +1223,56 @@
 
 
             return (
-                baseName +
+                base +
                 "." +
                 extension
             );
+
         }
 
 
 
         function downloadBytes(
-            bytes,
-            fileName
+            data,
+            filename,
+            mime =
+                "application/octet-stream"
         ) {
 
             const blob =
-                new Blob(
-                    [bytes],
-                    {
-                        type:
-                            "application/octet-stream"
-                    }
-                );
+                data instanceof Blob
+                    ? data
+                    : new Blob(
+                        [data],
+                        {
+                            type: mime
+                        }
+                    );
 
 
             const url =
-                URL.createObjectURL(blob);
+                URL.createObjectURL(
+                    blob
+                );
 
 
             const link =
-                document.createElement("a");
+                document.createElement(
+                    "a"
+                );
 
 
             link.href =
                 url;
 
             link.download =
-                fileName;
+                filename;
 
 
-            document.body.appendChild(link);
+            document.body.appendChild(
+                link
+            );
+
 
             link.click();
 
@@ -917,7 +1282,9 @@
             setTimeout(
                 () => {
 
-                    URL.revokeObjectURL(url);
+                    URL.revokeObjectURL(
+                        url
+                    );
 
                 },
                 1000
@@ -926,6 +1293,12 @@
         }
 
 
+
+        /*
+         * ============================================================
+         * ROM CONVERTER
+         * ============================================================
+         */
 
         const converterDropZone =
             document.getElementById(
@@ -963,11 +1336,15 @@
 
 
                 const input =
-                    new Uint8Array(buffer);
+                    new Uint8Array(
+                        buffer
+                    );
 
 
                 const format =
-                    detectRomFormat(input);
+                    detectRomFormat(
+                        input
+                    );
 
 
                 if (
@@ -989,15 +1366,15 @@
 
 
                 const converted =
-                    reverseWords(input);
-
-
-                const convertedFormat =
-                    detectRomFormat(converted);
+                    reverseWords(
+                        input
+                    );
 
 
                 if (
-                    convertedFormat !== target
+                    detectRomFormat(
+                        converted
+                    ) !== target
                 ) {
 
                     throw new Error(
@@ -1030,7 +1407,9 @@
             }
             catch (error) {
 
-                console.error(error);
+                console.error(
+                    error
+                );
 
 
                 converterStatus.className =
@@ -1091,7 +1470,9 @@
 
                 if (file) {
 
-                    convertRomFile(file);
+                    convertRomFile(
+                        file
+                    );
 
                 }
 
@@ -1144,7 +1525,9 @@
 
                 if (file) {
 
-                    convertRomFile(file);
+                    convertRomFile(
+                        file
+                    );
 
                 }
 
@@ -1155,13 +1538,11 @@
 
 
 
-    <!-- ==========================================================
-         XXH3-64
-         ========================================================== -->
+    <!-- ============================================================
+         XXH3 HASH
+         ============================================================ -->
 
-    <script
-        src="https://cdn.jsdelivr.net/npm/hash-wasm@4"
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/hash-wasm@4"></script>
 
 
     <script>
@@ -1208,16 +1589,15 @@
 
 
         /*
-         * Normalize ROM only for reading header data.
-         *
-         * The hash is calculated BEFORE this conversion,
-         * using the original ROM bytes.
+         * Convert to Z64 order for header reading only.
          */
 
         function normalizeRomForHeader(bytes) {
 
             const format =
-                detectRomFormat(bytes);
+                detectRomFormat(
+                    bytes
+                );
 
 
             if (format === "z64") {
@@ -1228,11 +1608,13 @@
 
 
             const output =
-                new Uint8Array(bytes.length);
+                new Uint8Array(
+                    bytes.length
+                );
 
 
             /*
-             * N64 little endian.
+             * N64 -> Z64
              */
 
             if (format === "n64") {
@@ -1262,11 +1644,12 @@
 
 
                 return output;
+
             }
 
 
             /*
-             * V64 byte swapped.
+             * V64 -> Z64
              */
 
             if (format === "v64") {
@@ -1290,28 +1673,31 @@
 
 
                 return output;
+
             }
 
 
             return bytes;
+
         }
 
 
 
         /*
-         * Internal ROM name:
-         *
-         * 0x20 - 0x33
+         * Internal name lives at 0x20 - 0x33.
          */
 
         function getInternalName(bytes) {
 
             const normalized =
-                normalizeRomForHeader(bytes);
+                normalizeRomForHeader(
+                    bytes
+                );
 
 
             if (
-                normalized.length < 0x34
+                normalized.length <
+                0x34
             ) {
 
                 return "UNKNOWN";
@@ -1319,7 +1705,8 @@
             }
 
 
-            let name = "";
+            let name =
+                "";
 
 
             for (
@@ -1338,7 +1725,9 @@
                 ) {
 
                     name +=
-                        String.fromCharCode(byte);
+                        String.fromCharCode(
+                            byte
+                        );
 
                 }
 
@@ -1346,6 +1735,7 @@
 
 
             return name.trim();
+
         }
 
 
@@ -1389,11 +1779,15 @@
 
 
                 const bytes =
-                    new Uint8Array(buffer);
+                    new Uint8Array(
+                        buffer
+                    );
 
 
                 if (
-                    !detectRomFormat(bytes)
+                    !detectRomFormat(
+                        bytes
+                    )
                 ) {
 
                     throw new Error(
@@ -1404,7 +1798,7 @@
 
 
                 /*
-                 * Actual XXH3-64.
+                 * hash-wasm's xxhash3 is actual XXH3-64.
                  */
 
                 const rawHash =
@@ -1449,7 +1843,9 @@
             }
             catch (error) {
 
-                console.error(error);
+                console.error(
+                    error
+                );
 
 
                 hashStatus.className =
@@ -1485,9 +1881,11 @@
                 }
 
 
-                await navigator.clipboard.writeText(
-                    currentGameInfo
-                );
+                await navigator
+                    .clipboard
+                    .writeText(
+                        currentGameInfo
+                    );
 
 
                 copyHashButton.textContent =
@@ -1547,7 +1945,9 @@
 
                 if (file) {
 
-                    hashRomFile(file);
+                    hashRomFile(
+                        file
+                    );
 
                 }
 
@@ -1600,7 +2000,9 @@
 
                 if (file) {
 
-                    hashRomFile(file);
+                    hashRomFile(
+                        file
+                    );
 
                 }
 
@@ -1609,5 +2011,1246 @@
 
     </script>
 
+
+
+    <!-- ============================================================
+         N64SYM UI CONTROLLER
+         ============================================================ -->
+
+    <script>
+
+        const n64symDropZone =
+            document.getElementById(
+                "n64sym-drop-zone"
+            );
+
+
+        const n64symFileInput =
+            document.getElementById(
+                "n64sym-file-input"
+            );
+
+
+        const n64symThorough =
+            document.getElementById(
+                "n64sym-thorough"
+            );
+
+
+        const n64symStatus =
+            document.getElementById(
+                "n64sym-status"
+            );
+
+
+        const n64symProgress =
+            document.getElementById(
+                "n64sym-progress"
+            );
+
+
+        const n64symProgressText =
+            document.getElementById(
+                "n64sym-progress-text"
+            );
+
+
+        const n64symProgressPercent =
+            document.getElementById(
+                "n64sym-progress-percent"
+            );
+
+
+        const n64symProgressFill =
+            document.getElementById(
+                "n64sym-progress-fill"
+            );
+
+
+        const n64symResultsBox =
+            document.getElementById(
+                "n64sym-results"
+            );
+
+
+        const n64symResultCount =
+            document.getElementById(
+                "n64sym-result-count"
+            );
+
+
+        const n64symOutput =
+            document.getElementById(
+                "n64sym-output"
+            );
+
+
+        const n64symCopyButton =
+            document.getElementById(
+                "n64sym-copy-button"
+            );
+
+
+        const n64symDownloadButton =
+            document.getElementById(
+                "n64sym-download-button"
+            );
+
+
+
+        let n64symSignatures =
+            null;
+
+
+        let n64symResults =
+            [];
+
+
+        let n64symOutputText =
+            "";
+
+
+        let n64symEntryPoint =
+            0;
+
+
+        let n64symActiveWorkers =
+            0;
+
+
+        let n64symScanned =
+            0;
+
+
+        let n64symWorkers =
+            [];
+
+
+
+        /*
+         * ============================================================
+         * LOAD SHYGOO SIGNATURE DATABASE
+         * ============================================================
+         */
+
+        async function loadN64SymSignatures() {
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/tools/n64sym/signatures.json"
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Unable to load n64sym signatures."
+                    );
+
+                }
+
+
+                n64symSignatures =
+                    await response.json();
+
+
+                console.log(
+                    "Loaded " +
+                    n64symSignatures.length +
+                    " n64sym signatures"
+                );
+
+            }
+            catch (error) {
+
+                console.error(
+                    error
+                );
+
+
+                n64symStatus.className =
+                    "status error";
+
+
+                n64symStatus.textContent =
+                    "Unable to load the n64sym signature database.";
+
+            }
+
+        }
+
+
+
+        /*
+         * ============================================================
+         * NORMALIZE ROM FOR N64SYM
+         * ============================================================
+         */
+
+        function normalizeN64SymRom(bytes) {
+
+            const format =
+                detectRomFormat(
+                    bytes
+                );
+
+
+            if (!format) {
+
+                /*
+                 * Original n64sym can also work with
+                 * RAM/binary dumps.
+                 */
+
+                return {
+                    binary:
+                        new Uint8Array(
+                            bytes
+                        ),
+
+                    isRom:
+                        false
+                };
+
+            }
+
+
+            /*
+             * Z64 is already big endian.
+             */
+
+            if (
+                format === "z64"
+            ) {
+
+                return {
+                    binary:
+                        new Uint8Array(
+                            bytes
+                        ),
+
+                    isRom:
+                        true
+                };
+
+            }
+
+
+            const output =
+                new Uint8Array(
+                    bytes.length
+                );
+
+
+            /*
+             * .n64 -> .z64
+             */
+
+            if (
+                format === "n64"
+            ) {
+
+                for (
+                    let i = 0;
+                    i + 3 < bytes.length;
+                    i += 4
+                ) {
+
+                    output[i] =
+                        bytes[i + 3];
+
+                    output[i + 1] =
+                        bytes[i + 2];
+
+                    output[i + 2] =
+                        bytes[i + 1];
+
+                    output[i + 3] =
+                        bytes[i];
+
+                }
+
+
+                return {
+                    binary: output,
+                    isRom: true
+                };
+
+            }
+
+
+            /*
+             * .v64 -> .z64
+             */
+
+            if (
+                format === "v64"
+            ) {
+
+                for (
+                    let i = 0;
+                    i + 1 < bytes.length;
+                    i += 2
+                ) {
+
+                    output[i] =
+                        bytes[i + 1];
+
+                    output[i + 1] =
+                        bytes[i];
+
+                }
+
+
+                return {
+                    binary: output,
+                    isRom: true
+                };
+
+            }
+
+
+            return {
+                binary:
+                    new Uint8Array(
+                        bytes
+                    ),
+
+                isRom:
+                    false
+            };
+
+        }
+
+
+
+        /*
+         * ============================================================
+         * ENTRYPOINT
+         * ============================================================
+         *
+         * Mirrors the CIC adjustments performed by
+         * Shygoo's web n64sym.
+         */
+
+        function calculateN64SymEntryPoint(
+            binary,
+            isRom
+        ) {
+
+            if (!isRom) {
+
+                return 0;
+
+            }
+
+
+            if (
+                binary.length <
+                0x1000
+            ) {
+
+                return 0;
+
+            }
+
+
+            const view =
+                new DataView(
+                    binary.buffer,
+                    binary.byteOffset,
+                    binary.byteLength
+                );
+
+
+            let entryPoint =
+                (
+                    view.getUint32(
+                        0x08
+                    ) -
+                    0x1000
+                ) >>> 0;
+
+
+            const bootCheck =
+                crc32(
+                    binary,
+                    0x40,
+                    0xFC0
+                );
+
+
+            /*
+             * CIC 6103
+             */
+
+            if (
+                bootCheck ===
+                0x0B050EE0
+            ) {
+
+                entryPoint =
+                    (
+                        entryPoint -
+                        0x100000
+                    ) >>> 0;
+
+            }
+
+
+            /*
+             * CIC 6106
+             */
+
+            else if (
+                bootCheck ===
+                0xACC8580A
+            ) {
+
+                entryPoint =
+                    (
+                        entryPoint -
+                        0x200000
+                    ) >>> 0;
+
+            }
+
+
+            return entryPoint;
+
+        }
+
+
+
+        /*
+         * ============================================================
+         * LIKELY FUNCTION OFFSETS
+         * ============================================================
+         */
+
+        function collectLikelyFunctionOffsets(
+            binary
+        ) {
+
+            const view =
+                new DataView(
+                    binary.buffer,
+                    binary.byteOffset,
+                    binary.byteLength
+                );
+
+
+            const offsets =
+                new Set();
+
+
+            for (
+                let offset = 0;
+                offset + 4 <=
+                    binary.length;
+                offset += 4
+            ) {
+
+                const word =
+                    view.getUint32(
+                        offset
+                    );
+
+
+                /*
+                 * JR RA
+                 */
+
+                if (
+                    word ===
+                    0x03E00008
+                ) {
+
+                    for (
+                        let next =
+                            offset + 8;
+
+                        next + 4 <=
+                            binary.length;
+
+                        next += 4
+                    ) {
+
+                        if (
+                            view.getUint32(
+                                next
+                            ) !== 0
+                        ) {
+
+                            offsets.add(
+                                next
+                            );
+
+                            break;
+
+                        }
+
+                    }
+
+                }
+
+
+                /*
+                 * ADDIU SP, SP, -N
+                 */
+
+                if (
+                    (
+                        word &
+                        0xFFFF0000
+                    ) ===
+                    0x27BD0000
+                ) {
+
+                    if (
+                        view.getInt16(
+                            offset + 2
+                        ) < 0
+                    ) {
+
+                        offsets.add(
+                            offset
+                        );
+
+                    }
+
+                }
+
+            }
+
+
+            return Array.from(
+                offsets
+            );
+
+        }
+
+
+
+        /*
+         * ============================================================
+         * RESULTS
+         * ============================================================
+         */
+
+        function addN64SymResult(
+            name,
+            address
+        ) {
+
+            address =
+                address >>> 0;
+
+
+            /*
+             * Original n64sym ignores duplicate
+             * addresses.
+             */
+
+            const duplicate =
+                n64symResults.some(
+                    result =>
+                        result.address ===
+                        address
+                );
+
+
+            if (duplicate) {
+
+                return;
+
+            }
+
+
+            n64symResults.push({
+                name,
+                address
+            });
+
+
+            redrawN64SymResults();
+
+        }
+
+
+
+        function redrawN64SymResults() {
+
+            n64symResults.sort(
+                (a, b) =>
+                    a.address -
+                    b.address
+            );
+
+
+            n64symOutputText =
+                n64symResults
+                    .map(
+                        result => {
+
+                            const address =
+                                result.address
+                                    .toString(16)
+                                    .toUpperCase()
+                                    .padStart(
+                                        8,
+                                        "0"
+                                    );
+
+
+                            return (
+                                address +
+                                " " +
+                                result.name
+                            );
+
+                        }
+                    )
+                    .join("\n");
+
+
+            n64symOutput.textContent =
+                n64symOutputText;
+
+
+            const count =
+                n64symResults.length;
+
+
+            n64symResultCount.textContent =
+                count +
+                (
+                    count === 1
+                        ? " symbol found"
+                        : " symbols found"
+                );
+
+
+            n64symResultsBox.classList.add(
+                "visible"
+            );
+
+        }
+
+
+
+        /*
+         * ============================================================
+         * FINISH SCAN
+         * ============================================================
+         */
+
+        function finishN64SymScan() {
+
+            n64symProgressFill.style.width =
+                "100%";
+
+
+            n64symProgressPercent.textContent =
+                "100%";
+
+
+            n64symProgressText.textContent =
+                "Scan complete";
+
+
+            n64symStatus.className =
+                "status success";
+
+
+            n64symStatus.textContent =
+                "Found " +
+                n64symResults.length +
+                (
+                    n64symResults.length === 1
+                        ? " symbol"
+                        : " symbols"
+                );
+
+
+            redrawN64SymResults();
+
+
+            n64symWorkers.forEach(
+                worker =>
+                    worker.terminate()
+            );
+
+
+            n64symWorkers =
+                [];
+
+        }
+
+
+
+        /*
+         * ============================================================
+         * RUN SCAN
+         * ============================================================
+         */
+
+        async function scanN64SymFile(
+            file
+        ) {
+
+            if (!n64symSignatures) {
+
+                n64symStatus.className =
+                    "status error";
+
+
+                n64symStatus.textContent =
+                    "n64sym signatures are still loading.";
+
+
+                return;
+
+            }
+
+
+            /*
+             * Stop an old scan if another file gets dropped.
+             */
+
+            n64symWorkers.forEach(
+                worker =>
+                    worker.terminate()
+            );
+
+
+            n64symWorkers =
+                [];
+
+
+            n64symResults =
+                [];
+
+
+            n64symOutputText =
+                "";
+
+
+            n64symScanned =
+                0;
+
+
+            n64symOutput.textContent =
+                "";
+
+
+            n64symResultsBox.classList.remove(
+                "visible"
+            );
+
+
+            n64symProgress.classList.add(
+                "visible"
+            );
+
+
+            n64symProgressFill.style.width =
+                "0%";
+
+
+            n64symProgressPercent.textContent =
+                "0%";
+
+
+            n64symProgressText.textContent =
+                "Reading file...";
+
+
+            n64symStatus.className =
+                "status";
+
+
+            n64symStatus.textContent =
+                "";
+
+
+            try {
+
+                const arrayBuffer =
+                    await file.arrayBuffer();
+
+
+                const original =
+                    new Uint8Array(
+                        arrayBuffer
+                    );
+
+
+                const normalized =
+                    normalizeN64SymRom(
+                        original
+                    );
+
+
+                const binary =
+                    normalized.binary;
+
+
+                const isRom =
+                    normalized.isRom;
+
+
+                n64symEntryPoint =
+                    calculateN64SymEntryPoint(
+                        binary,
+                        isRom
+                    );
+
+
+                n64symProgressText.textContent =
+                    "Locating functions...";
+
+
+                /*
+                 * Give the browser a frame to repaint.
+                 */
+
+                await new Promise(
+                    resolve =>
+                        setTimeout(
+                            resolve,
+                            20
+                        )
+                );
+
+
+                const likelyOffsets =
+                    collectLikelyFunctionOffsets(
+                        binary
+                    );
+
+
+                n64symProgressText.textContent =
+                    "Scanning symbols...";
+
+                const workerCount =
+                    Math.max(
+                        1,
+                        Math.min(
+                            navigator.hardwareConcurrency
+                                || 1,
+                            16,
+                            n64symSignatures.length
+                        )
+                    );
+
+
+                n64symActiveWorkers =
+                    workerCount;
+
+
+                const baseCount =
+                    Math.floor(
+                        n64symSignatures.length /
+                        workerCount
+                    );
+
+
+                let remainder =
+                    n64symSignatures.length %
+                    workerCount;
+
+
+                let signatureIndex =
+                    0;
+
+
+                for (
+                    let i = 0;
+                    i < workerCount;
+                    i++
+                ) {
+
+                    const count =
+                        baseCount +
+                        (
+                            remainder > 0
+                                ? 1
+                                : 0
+                        );
+
+
+                    if (
+                        remainder > 0
+                    ) {
+
+                        remainder--;
+
+                    }
+
+
+                    const worker =
+                        new Worker(
+                            "/tools/n64sym/js/n64sym-worker.js"
+                        );
+
+
+                    n64symWorkers.push(
+                        worker
+                    );
+
+
+                    worker.onmessage =
+                        event => {
+
+                            const message =
+                                event.data;
+
+
+                            /*
+                             * Direct symbol hit.
+                             */
+
+                            if (
+                                message.status ===
+                                "result"
+                            ) {
+
+                                const address =
+                                    isRom
+                                        ? (
+                                            n64symEntryPoint +
+                                            message.offset
+                                        ) >>> 0
+                                        : message.offset >>> 0;
+
+
+                                addN64SymResult(
+                                    message.name,
+                                    address
+                                );
+
+                            }
+
+
+                            /*
+                             * Symbol discovered from
+                             * relocation information.
+                             */
+
+                            else if (
+                                message.status ===
+                                "reloc_result"
+                            ) {
+
+                                addN64SymResult(
+                                    message.name,
+                                    message.address
+                                );
+
+                            }
+
+
+                            /*
+                             * One signature finished.
+                             */
+
+                            else if (
+                                message.status ===
+                                "progress"
+                            ) {
+
+                                n64symScanned++;
+
+
+                                const percent =
+                                    Math.min(
+                                        100,
+                                        (
+                                            n64symScanned /
+                                            n64symSignatures.length
+                                        ) * 100
+                                    );
+
+
+                                n64symProgressFill
+                                    .style.width =
+                                    percent + "%";
+
+
+                                n64symProgressPercent
+                                    .textContent =
+                                    Math.floor(
+                                        percent
+                                    ) + "%";
+
+                            }
+
+
+                            /*
+                             * Worker finished.
+                             */
+
+                            else if (
+                                message.status ===
+                                "done"
+                            ) {
+
+                                n64symActiveWorkers--;
+
+
+                                if (
+                                    n64symActiveWorkers ===
+                                    0
+                                ) {
+
+                                    finishN64SymScan();
+
+                                }
+
+                            }
+
+                        };
+
+
+                    worker.onerror =
+                        error => {
+
+                            console.error(
+                                error
+                            );
+
+
+                            n64symStatus.className =
+                                "status error";
+
+
+                            n64symStatus.textContent =
+                                "A n64sym worker failed.";
+
+                        };
+
+
+                    worker.postMessage({
+
+                        binary,
+
+                        signatures:
+                            n64symSignatures,
+
+                        index:
+                            signatureIndex,
+
+                        count,
+
+                        offsets:
+                            likelyOffsets,
+
+                        thorough:
+                            n64symThorough.checked
+
+                    });
+
+
+                    signatureIndex +=
+                        count;
+
+                }
+
+            }
+            catch (error) {
+
+                console.error(
+                    error
+                );
+
+
+                n64symStatus.className =
+                    "status error";
+
+
+                n64symStatus.textContent =
+                    error.message ||
+                    "Unable to scan file.";
+
+            }
+            finally {
+
+                n64symFileInput.value =
+                    "";
+
+            }
+
+        }
+
+        n64symCopyButton.addEventListener(
+            "click",
+            async () => {
+
+                if (
+                    !n64symOutputText
+                ) {
+
+                    return;
+
+                }
+
+
+                await navigator
+                    .clipboard
+                    .writeText(
+                        n64symOutputText
+                    );
+
+
+                n64symCopyButton.textContent =
+                    "Copied!";
+
+
+                setTimeout(
+                    () => {
+
+                        n64symCopyButton.textContent =
+                            "Copy";
+
+                    },
+                    1200
+                );
+
+            }
+        );
+
+        n64symDownloadButton.addEventListener(
+            "click",
+            () => {
+
+                if (
+                    !n64symOutputText
+                ) {
+
+                    return;
+
+                }
+
+
+                downloadBytes(
+                    n64symOutputText + "\n",
+                    "symbols.txt",
+                    "text/plain"
+                );
+
+            }
+        );
+        
+        n64symDropZone.addEventListener(
+            "click",
+            () => {
+
+                n64symFileInput.click();
+
+            }
+        );
+
+
+        n64symDropZone.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key === "Enter" ||
+                    event.key === " "
+                ) {
+
+                    event.preventDefault();
+
+                    n64symFileInput.click();
+
+                }
+
+            }
+        );
+
+
+        n64symFileInput.addEventListener(
+            "change",
+            () => {
+
+                const file =
+                    n64symFileInput.files[0];
+
+
+                if (file) {
+
+                    scanN64SymFile(
+                        file
+                    );
+
+                }
+
+            }
+        );
+
+
+        n64symDropZone.addEventListener(
+            "dragover",
+            event => {
+
+                event.preventDefault();
+
+
+                n64symDropZone.classList.add(
+                    "dragging"
+                );
+
+            }
+        );
+
+
+        n64symDropZone.addEventListener(
+            "dragleave",
+            () => {
+
+                n64symDropZone.classList.remove(
+                    "dragging"
+                );
+
+            }
+        );
+
+
+        n64symDropZone.addEventListener(
+            "drop",
+            event => {
+
+                event.preventDefault();
+
+
+                n64symDropZone.classList.remove(
+                    "dragging"
+                );
+
+
+                const file =
+                    event.dataTransfer.files[0];
+
+
+                if (file) {
+
+                    scanN64SymFile(
+                        file
+                    );
+
+                }
+
+            }
+        );
+
+        loadN64SymSignatures();
+
+    </script>
+
 </body>
+
 </html>
