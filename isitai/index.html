@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
 
@@ -22,6 +21,11 @@
         href="/favicon.png"
     >
 
+    <link
+        rel="apple-touch-icon"
+        href="/favicon.png"
+    >
+
     <style>
         :root {
             --background: #090b12;
@@ -38,6 +42,7 @@
             --yes: #ff8181;
             --no: #75d66f;
             --unknown: #e8c66a;
+            --error: #ff8080;
         }
 
         * {
@@ -79,7 +84,8 @@
         }
 
         button,
-        input {
+        input,
+        textarea {
             font: inherit;
         }
 
@@ -87,7 +93,6 @@
             width: min(1100px, calc(100% - 40px));
 
             margin: 0 auto;
-
             padding: 28px 0;
 
             display: flex;
@@ -109,9 +114,11 @@
 
         .nav-link {
             color: var(--text-secondary);
+
             font-weight: 600;
 
-            transition: color 0.2s ease;
+            transition:
+                color 0.2s ease;
         }
 
         .nav-link:hover {
@@ -127,9 +134,9 @@
         }
 
         .page-heading {
-            text-align: center;
-
             margin-bottom: 40px;
+
+            text-align: center;
         }
 
         .page-heading h1 {
@@ -174,6 +181,7 @@
 
         .input-row {
             display: flex;
+
             gap: 12px;
         }
 
@@ -232,12 +240,15 @@
         .check-button:hover {
             background: var(--accent-hover);
 
-            transform: translateY(-2px);
+            transform:
+                translateY(-2px);
         }
 
         .check-button:disabled {
             opacity: 0.6;
+
             cursor: wait;
+
             transform: none;
         }
 
@@ -253,11 +264,14 @@
             font-size: 0.9rem;
         }
 
+        .status.error {
+            color: var(--error);
+        }
+
         .result {
             display: none;
 
             margin-top: 28px;
-
             padding: 32px 24px;
 
             border:
@@ -323,13 +337,147 @@
             overflow-wrap: anywhere;
         }
 
+        .review-form {
+            display: none;
+
+            max-width: 520px;
+
+            margin: 26px auto 0;
+
+            padding-top: 24px;
+
+            border-top:
+                1px solid
+                var(--border);
+
+            text-align: left;
+        }
+
+        .review-form.visible {
+            display: block;
+        }
+
+        .review-heading {
+            margin-bottom: 14px;
+
+            text-align: center;
+
+            font-size: 1rem;
+            font-weight: 800;
+        }
+
+        .review-form label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: var(--text-secondary);
+
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .review-form textarea {
+            width: 100%;
+
+            min-height: 110px;
+
+            padding: 14px 16px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 11px;
+
+            outline: none;
+
+            resize: vertical;
+
+            color: var(--text);
+
+            background:
+                rgba(255, 255, 255, 0.055);
+
+            line-height: 1.5;
+
+            transition:
+                border-color 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .review-form textarea:focus {
+            border-color: var(--accent);
+
+            background:
+                rgba(255, 255, 255, 0.075);
+        }
+
+        .request-review-button {
+            width: 100%;
+
+            margin-top: 12px;
+
+            padding: 13px 20px;
+
+            border: 0;
+
+            border-radius: 11px;
+
+            color: #081008;
+
+            background: var(--accent);
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .request-review-button:hover {
+            background: var(--accent-hover);
+
+            transform:
+                translateY(-2px);
+        }
+
+        .request-review-button:disabled {
+            opacity: 0.6;
+
+            cursor: wait;
+
+            transform: none;
+        }
+
+        .review-status {
+            min-height: 22px;
+
+            margin-top: 12px;
+
+            color: var(--text-secondary);
+
+            text-align: center;
+
+            font-size: 0.86rem;
+        }
+
+        .review-status.success {
+            color: var(--accent);
+        }
+
+        .review-status.error {
+            color: var(--error);
+        }
+
         .rule-note {
             margin-top: 26px;
 
             color: var(--text-secondary);
 
             font-size: 0.83rem;
-
             line-height: 1.6;
 
             text-align: center;
@@ -362,6 +510,9 @@
         }
 
         @media (max-width: 650px) {
+            main {
+                padding-top: 50px;
+            }
 
             .input-row {
                 flex-direction: column;
@@ -370,15 +521,9 @@
             .check-button {
                 width: 100%;
             }
-
-            main {
-                padding-top: 50px;
-            }
-
         }
     </style>
 </head>
-
 
 <body>
 
@@ -390,7 +535,6 @@
         >
             SrBananaMan
         </a>
-
 
         <nav class="nav-links">
 
@@ -468,21 +612,79 @@
                     id="result-answer"
                 ></div>
 
+
                 <p
                     class="result-reason"
                     id="result-reason"
                 ></p>
+
 
                 <div
                     class="checked-url"
                     id="checked-url"
                 ></div>
 
+
+                <form
+                    class="review-form"
+                    id="review-form"
+                    action="https://formspree.io/f/mdengodg"
+                    method="POST"
+                >
+
+                    <div class="review-heading">
+                        Request a Review
+                    </div>
+
+
+                    <input
+                        type="hidden"
+                        id="review-project"
+                        name="Project URL"
+                    >
+
+
+                    <input
+                        type="hidden"
+                        name="Source"
+                        value="SrBananaMan IsItAI"
+                    >
+
+
+                    <label for="review-reason">
+                        Why should this project be reviewed?
+                    </label>
+
+
+                    <textarea
+                        id="review-reason"
+                        name="Reason"
+                        placeholder="Optional evidence or information..."
+                    ></textarea>
+
+
+                    <button
+                        class="request-review-button"
+                        id="request-review-button"
+                        type="submit"
+                    >
+                        Request Review
+                    </button>
+
+
+                    <p
+                        class="review-status"
+                        id="review-status"
+                    ></p>
+
+                </form>
+
             </div>
 
 
             <p class="rule-note">
-                These results are based on the contributors (if it contains an LLM contributor) and the manual list that is updated on my github).
+                Results are based on confirmed classifications
+                and GitHub contributor information.
             </p>
 
         </div>
@@ -541,8 +743,41 @@
             document.getElementById(
                 "checked-url"
             );
-      
-        function normalizeUrl(value) {
+
+
+        const reviewForm =
+            document.getElementById(
+                "review-form"
+            );
+
+
+        const reviewProject =
+            document.getElementById(
+                "review-project"
+            );
+
+
+        const reviewReason =
+            document.getElementById(
+                "review-reason"
+            );
+
+
+        const requestReviewButton =
+            document.getElementById(
+                "request-review-button"
+            );
+
+
+        const reviewStatus =
+            document.getElementById(
+                "review-status"
+            );
+
+
+        function normalizeUrl(
+            value
+        ) {
 
             try {
 
@@ -551,18 +786,23 @@
                         value.trim()
                     );
 
+
                 url.search =
                     "";
 
+
                 url.hash =
                     "";
-              
+
+
                 let normalized =
                     url.toString();
 
 
                 while (
-                    normalized.endsWith("/")
+                    normalized.endsWith(
+                        "/"
+                    )
                 ) {
 
                     normalized =
@@ -585,6 +825,8 @@
 
         }
 
+
+
         function getGitHubRepository(
             value
         ) {
@@ -592,7 +834,9 @@
             try {
 
                 const url =
-                    new URL(value);
+                    new URL(
+                        value
+                    );
 
 
                 if (
@@ -645,6 +889,27 @@
 
         }
 
+
+
+        function getRepositoryUrl(
+            github
+        ) {
+
+            if (!github) {
+
+                return null;
+
+            }
+
+
+            return normalizeUrl(
+                `https://github.com/${github.owner}/${github.repo}`
+            );
+
+        }
+
+
+
         async function loadList() {
 
             const response =
@@ -669,7 +934,9 @@
             return await response.json();
 
         }
-      
+
+
+
         async function checkAIContributor(
             github
         ) {
@@ -703,12 +970,6 @@
 
 
                 if (!response.ok) {
-
-                    console.warn(
-                        "Contributor lookup failed:",
-                        response.status
-                    );
-
 
                     return null;
 
@@ -753,19 +1014,51 @@
                 return null;
 
             }
-            catch (error) {
-
-                console.warn(
-                    "Contributor lookup failed:",
-                    error
-                );
-
+            catch {
 
                 return null;
 
             }
 
         }
+
+
+
+        function hideReviewForm() {
+
+            reviewForm
+                .classList
+                .remove(
+                    "visible"
+                );
+
+
+            reviewProject.value =
+                "";
+
+
+            reviewReason.value =
+                "";
+
+
+            reviewStatus.textContent =
+                "";
+
+
+            reviewStatus.className =
+                "review-status";
+
+
+            requestReviewButton.disabled =
+                false;
+
+
+            requestReviewButton.textContent =
+                "Request Review";
+
+        }
+
+
 
         function showResult(
             type,
@@ -790,8 +1083,31 @@
             checkedUrl.textContent =
                 url;
 
+
+            hideReviewForm();
+
         }
-      
+
+
+
+        function showReviewForm(
+            url
+        ) {
+
+            reviewProject.value =
+                url;
+
+
+            reviewForm
+                .classList
+                .add(
+                    "visible"
+                );
+
+        }
+
+
+
         async function checkUrl() {
 
             const originalValue =
@@ -806,6 +1122,10 @@
 
             if (!normalized) {
 
+                status.className =
+                    "status error";
+
+
                 status.textContent =
                     "Enter a valid URL.";
 
@@ -819,12 +1139,32 @@
             }
 
 
+            const github =
+                getGitHubRepository(
+                    normalized
+                );
+
+
+            const comparisonUrl =
+                getRepositoryUrl(
+                    github
+                ) ||
+                normalized;
+
+
+            status.className =
+                "status";
+
+
             status.textContent =
                 "Checking...";
 
 
             result.className =
                 "result";
+
+
+            hideReviewForm();
 
 
             checkButton.disabled =
@@ -842,12 +1182,12 @@
                         loadList(),
 
                         checkAIContributor(
-                            getGitHubRepository(
-                                normalized
-                            )
+                            github
                         )
 
                     ]);
+
+
 
                 if (
                     aiContributor
@@ -860,7 +1200,7 @@
 
                         `${aiContributor} was found in the GitHub contributor list.`,
 
-                        normalized
+                        comparisonUrl
                     );
 
 
@@ -868,14 +1208,17 @@
 
                 }
 
+
+
                 const vibecoded =
                     (
                         list.vibecoded ||
                         []
                     )
-                    .map(
-                        normalizeUrl
-                    );
+                        .map(
+                            normalizeUrl
+                        )
+                        .filter(Boolean);
 
 
                 const human =
@@ -883,13 +1226,16 @@
                         list.human ||
                         []
                     )
-                    .map(
-                        normalizeUrl
-                    );
-              
+                        .map(
+                            normalizeUrl
+                        )
+                        .filter(Boolean);
+
+
+
                 if (
                     vibecoded.includes(
-                        normalized
+                        comparisonUrl
                     )
                 ) {
 
@@ -898,9 +1244,9 @@
 
                         "Yes, It's Vibecoded",
 
-                        "This project is on the confirmed vibecoded list.",
+                        "This project has been confirmed as vibecoded.",
 
-                        normalized
+                        comparisonUrl
                     );
 
 
@@ -908,9 +1254,11 @@
 
                 }
 
+
+
                 if (
                     human.includes(
-                        normalized
+                        comparisonUrl
                     )
                 ) {
 
@@ -919,24 +1267,31 @@
 
                         "No, This Is Human Made",
 
-                        "This project is on the confirmed human-made list.",
+                        "This project has been confirmed as human made.",
 
-                        normalized
+                        comparisonUrl
                     );
 
 
                     return;
 
                 }
-              
+
+
+
                 showResult(
                     "unknown",
 
                     "Not Confirmed Yet",
 
-                    "This project has not been added to either confirmation list.",
+                    "This project has not been reviewed yet.",
 
-                    normalized
+                    comparisonUrl
+                );
+
+
+                showReviewForm(
+                    comparisonUrl
                 );
 
             }
@@ -947,11 +1302,16 @@
                 );
 
 
+                status.className =
+                    "status error";
+
+
                 status.textContent =
                     "Unable to complete the check.";
 
 
-                return;
+                result.className =
+                    "result";
 
             }
             finally {
@@ -974,10 +1334,128 @@
 
         }
 
+
+
+        reviewForm.addEventListener(
+            "submit",
+            async event => {
+
+                event.preventDefault();
+
+
+                if (
+                    !reviewProject.value
+                ) {
+
+                    return;
+
+                }
+
+
+                requestReviewButton.disabled =
+                    true;
+
+
+                requestReviewButton.textContent =
+                    "Submitting...";
+
+
+                reviewStatus.className =
+                    "review-status";
+
+
+                reviewStatus.textContent =
+                    "";
+
+
+                try {
+
+                    const formData =
+                        new FormData(
+                            reviewForm
+                        );
+
+
+                    const response =
+                        await fetch(
+                            "https://formspree.io/f/mdengodg",
+                            {
+                                method:
+                                    "POST",
+
+                                body:
+                                    formData,
+
+                                headers: {
+                                    Accept:
+                                        "application/json"
+                                }
+                            }
+                        );
+
+
+                    if (
+                        !response.ok
+                    ) {
+
+                        throw new Error(
+                            "Unable to submit review request."
+                        );
+
+                    }
+
+
+                    reviewStatus.className =
+                        "review-status success";
+
+
+                    reviewStatus.textContent =
+                        "Review request submitted!";
+
+
+                    requestReviewButton.textContent =
+                        "Submitted ✓";
+
+
+                    reviewReason.value =
+                        "";
+
+                }
+                catch (error) {
+
+                    console.error(
+                        error
+                    );
+
+
+                    reviewStatus.className =
+                        "review-status error";
+
+
+                    reviewStatus.textContent =
+                        "Unable to submit review request.";
+
+
+                    requestReviewButton.disabled =
+                        false;
+
+
+                    requestReviewButton.textContent =
+                        "Request Review";
+
+                }
+
+            }
+        );
+
+
+
         checkButton.addEventListener(
             "click",
             checkUrl
         );
+
+
 
         urlInput.addEventListener(
             "keydown",
@@ -994,6 +1472,8 @@
 
             }
         );
+
+
 
         const query =
             new URLSearchParams(
