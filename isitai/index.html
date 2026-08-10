@@ -1,0 +1,1025 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Is It AI? - SrBananaMan</title>
+
+    <meta
+        name="description"
+        content="Check whether a project has been confirmed as vibecoded."
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="/favicon.png"
+    >
+
+    <style>
+        :root {
+            --background: #090b12;
+            --card: rgba(24, 29, 45, 0.82);
+
+            --text: #ffffff;
+            --text-secondary: #aeb6cc;
+
+            --accent: #75d66f;
+            --accent-hover: #93eb8e;
+
+            --border: rgba(255, 255, 255, 0.1);
+
+            --yes: #ff8181;
+            --no: #75d66f;
+            --unknown: #e8c66a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            color: var(--text);
+
+            background:
+                radial-gradient(
+                    circle at top,
+                    rgba(65, 130, 75, 0.22),
+                    transparent 38%
+                ),
+                var(--background);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        header {
+            width: min(1100px, calc(100% - 40px));
+
+            margin: 0 auto;
+
+            padding: 28px 0;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            font-weight: 600;
+
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+        }
+
+        main {
+            width: min(800px, calc(100% - 40px));
+
+            margin: 0 auto;
+
+            padding: 80px 0 140px;
+        }
+
+        .page-heading {
+            text-align: center;
+
+            margin-bottom: 40px;
+        }
+
+        .page-heading h1 {
+            font-size:
+                clamp(3rem, 9vw, 6rem);
+
+            letter-spacing: -0.06em;
+        }
+
+        .page-heading p {
+            max-width: 620px;
+
+            margin: 16px auto 0;
+
+            color: var(--text-secondary);
+
+            line-height: 1.7;
+        }
+
+        .checker-card {
+            padding:
+                clamp(28px, 5vw, 48px);
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 26px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(94, 175, 91, 0.12),
+                    transparent 50%
+                ),
+                var(--card);
+
+            box-shadow:
+                0 30px 70px
+                rgba(0, 0, 0, 0.28);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .url-input {
+            flex: 1;
+
+            min-width: 0;
+
+            padding: 15px 17px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 12px;
+
+            outline: none;
+
+            color: var(--text);
+
+            background:
+                rgba(255, 255, 255, 0.055);
+
+            transition:
+                border-color 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .url-input:focus {
+            border-color: var(--accent);
+
+            background:
+                rgba(255, 255, 255, 0.075);
+        }
+
+        .check-button {
+            padding: 15px 23px;
+
+            border: 0;
+
+            border-radius: 12px;
+
+            color: #081008;
+
+            background: var(--accent);
+
+            font-weight: 900;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .check-button:hover {
+            background: var(--accent-hover);
+
+            transform: translateY(-2px);
+        }
+
+        .check-button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+            transform: none;
+        }
+
+        .status {
+            min-height: 22px;
+
+            margin-top: 15px;
+
+            color: var(--text-secondary);
+
+            text-align: center;
+
+            font-size: 0.9rem;
+        }
+
+        .result {
+            display: none;
+
+            margin-top: 28px;
+
+            padding: 32px 24px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 18px;
+
+            text-align: center;
+
+            background:
+                rgba(0, 0, 0, 0.16);
+        }
+
+        .result.visible {
+            display: block;
+        }
+
+        .result-answer {
+            font-size:
+                clamp(1.8rem, 5vw, 3rem);
+
+            font-weight: 900;
+
+            letter-spacing: -0.04em;
+        }
+
+        .result.yes .result-answer {
+            color: var(--yes);
+        }
+
+        .result.no .result-answer {
+            color: var(--no);
+        }
+
+        .result.unknown .result-answer {
+            color: var(--unknown);
+        }
+
+        .result-reason {
+            max-width: 580px;
+
+            margin: 12px auto 0;
+
+            color: var(--text-secondary);
+
+            line-height: 1.6;
+        }
+
+        .checked-url {
+            margin-top: 16px;
+
+            color: var(--text-secondary);
+
+            font-family:
+                "SFMono-Regular",
+                Consolas,
+                "Liberation Mono",
+                monospace;
+
+            font-size: 0.8rem;
+
+            overflow-wrap: anywhere;
+        }
+
+        .rule-note {
+            margin-top: 26px;
+
+            color: var(--text-secondary);
+
+            font-size: 0.83rem;
+
+            line-height: 1.6;
+
+            text-align: center;
+        }
+
+        footer {
+            border-top:
+                1px solid
+                var(--border);
+
+            background:
+                rgba(0, 0, 0, 0.18);
+        }
+
+        .footer-content {
+            width:
+                min(
+                    1000px,
+                    calc(100% - 40px)
+                );
+
+            margin: 0 auto;
+            padding: 34px 0;
+
+            color: var(--text-secondary);
+
+            text-align: center;
+
+            font-size: 0.92rem;
+        }
+
+        @media (max-width: 650px) {
+
+            .input-row {
+                flex-direction: column;
+            }
+
+            .check-button {
+                width: 100%;
+            }
+
+            main {
+                padding-top: 50px;
+            }
+
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <header>
+
+        <a
+            class="logo"
+            href="/"
+        >
+            SrBananaMan
+        </a>
+
+
+        <nav class="nav-links">
+
+            <a
+                class="nav-link"
+                href="/"
+            >
+                Home
+            </a>
+
+            <a
+                class="nav-link"
+                href="/tools/"
+            >
+                Tools
+            </a>
+
+        </nav>
+
+    </header>
+
+
+    <main>
+
+        <div class="page-heading">
+
+            <h1>
+                Is It AI?
+            </h1>
+
+            <p>
+                Enter a project URL to check whether it has been
+                confirmed as vibecoded.
+            </p>
+
+        </div>
+
+
+        <div class="checker-card">
+
+            <div class="input-row">
+
+                <input
+                    class="url-input"
+                    id="url-input"
+                    type="url"
+                    placeholder="https://github.com/owner/repository"
+                    autocomplete="off"
+                >
+
+                <button
+                    class="check-button"
+                    id="check-button"
+                    type="button"
+                >
+                    Check
+                </button>
+
+            </div>
+
+
+            <p
+                class="status"
+                id="status"
+            ></p>
+
+
+            <div
+                class="result"
+                id="result"
+            >
+
+                <div
+                    class="result-answer"
+                    id="result-answer"
+                ></div>
+
+                <p
+                    class="result-reason"
+                    id="result-reason"
+                ></p>
+
+                <div
+                    class="checked-url"
+                    id="checked-url"
+                ></div>
+
+            </div>
+
+
+            <p class="rule-note">
+                These results are based on the contributors (if it contains an LLM contributor) and the manual list that is updated on my github).
+            </p>
+
+        </div>
+
+    </main>
+
+
+    <footer>
+
+        <div class="footer-content">
+            © 2026 SrBananaMan
+        </div>
+
+    </footer>
+
+
+    <script>
+
+        const urlInput =
+            document.getElementById(
+                "url-input"
+            );
+
+
+        const checkButton =
+            document.getElementById(
+                "check-button"
+            );
+
+
+        const status =
+            document.getElementById(
+                "status"
+            );
+
+
+        const result =
+            document.getElementById(
+                "result"
+            );
+
+
+        const resultAnswer =
+            document.getElementById(
+                "result-answer"
+            );
+
+
+        const resultReason =
+            document.getElementById(
+                "result-reason"
+            );
+
+
+        const checkedUrl =
+            document.getElementById(
+                "checked-url"
+            );
+      
+        function normalizeUrl(value) {
+
+            try {
+
+                const url =
+                    new URL(
+                        value.trim()
+                    );
+
+                url.search =
+                    "";
+
+                url.hash =
+                    "";
+              
+                let normalized =
+                    url.toString();
+
+
+                while (
+                    normalized.endsWith("/")
+                ) {
+
+                    normalized =
+                        normalized.slice(
+                            0,
+                            -1
+                        );
+
+                }
+
+
+                return normalized;
+
+            }
+            catch {
+
+                return null;
+
+            }
+
+        }
+
+        function getGitHubRepository(
+            value
+        ) {
+
+            try {
+
+                const url =
+                    new URL(value);
+
+
+                if (
+                    url.hostname !==
+                        "github.com" &&
+                    url.hostname !==
+                        "www.github.com"
+                ) {
+
+                    return null;
+
+                }
+
+
+                const parts =
+                    url.pathname
+                        .split("/")
+                        .filter(Boolean);
+
+
+                if (
+                    parts.length < 2
+                ) {
+
+                    return null;
+
+                }
+
+
+                return {
+
+                    owner:
+                        parts[0],
+
+                    repo:
+                        parts[1]
+                            .replace(
+                                /\.git$/i,
+                                ""
+                            )
+
+                };
+
+            }
+            catch {
+
+                return null;
+
+            }
+
+        }
+
+        async function loadList() {
+
+            const response =
+                await fetch(
+                    "/isitai/list.json",
+                    {
+                        cache:
+                            "no-store"
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Could not load confirmation list."
+                );
+
+            }
+
+
+            return await response.json();
+
+        }
+      
+        async function checkAIContributor(
+            github
+        ) {
+
+            if (!github) {
+
+                return null;
+
+            }
+
+
+            const apiUrl =
+                `https://api.github.com/repos/` +
+                `${github.owner}/` +
+                `${github.repo}/contributors` +
+                `?per_page=100`;
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        apiUrl,
+                        {
+                            headers: {
+                                Accept:
+                                    "application/vnd.github+json"
+                            }
+                        }
+                    );
+
+
+                if (!response.ok) {
+
+                    console.warn(
+                        "Contributor lookup failed:",
+                        response.status
+                    );
+
+
+                    return null;
+
+                }
+
+
+                const contributors =
+                    await response.json();
+
+
+                for (
+                    const contributor
+                    of contributors
+                ) {
+
+                    const login =
+                        (
+                            contributor.login ||
+                            ""
+                        ).toLowerCase();
+
+
+                    if (
+                        login.includes(
+                            "claude"
+                        ) ||
+                        login.includes(
+                            "codex"
+                        )
+                    ) {
+
+                        return (
+                            contributor.login ||
+                            "AI contributor"
+                        );
+
+                    }
+
+                }
+
+
+                return null;
+
+            }
+            catch (error) {
+
+                console.warn(
+                    "Contributor lookup failed:",
+                    error
+                );
+
+
+                return null;
+
+            }
+
+        }
+
+        function showResult(
+            type,
+            answer,
+            reason,
+            url
+        ) {
+
+            result.className =
+                "result visible " +
+                type;
+
+
+            resultAnswer.textContent =
+                answer;
+
+
+            resultReason.textContent =
+                reason;
+
+
+            checkedUrl.textContent =
+                url;
+
+        }
+      
+        async function checkUrl() {
+
+            const originalValue =
+                urlInput.value.trim();
+
+
+            const normalized =
+                normalizeUrl(
+                    originalValue
+                );
+
+
+            if (!normalized) {
+
+                status.textContent =
+                    "Enter a valid URL.";
+
+
+                result.className =
+                    "result";
+
+
+                return;
+
+            }
+
+
+            status.textContent =
+                "Checking...";
+
+
+            result.className =
+                "result";
+
+
+            checkButton.disabled =
+                true;
+
+
+            try {
+
+                const [
+                    list,
+                    aiContributor
+                ] =
+                    await Promise.all([
+
+                        loadList(),
+
+                        checkAIContributor(
+                            getGitHubRepository(
+                                normalized
+                            )
+                        )
+
+                    ]);
+
+                if (
+                    aiContributor
+                ) {
+
+                    showResult(
+                        "yes",
+
+                        "Yes, It's Vibecoded",
+
+                        `${aiContributor} was found in the GitHub contributor list.`,
+
+                        normalized
+                    );
+
+
+                    return;
+
+                }
+
+                const vibecoded =
+                    (
+                        list.vibecoded ||
+                        []
+                    )
+                    .map(
+                        normalizeUrl
+                    );
+
+
+                const human =
+                    (
+                        list.human ||
+                        []
+                    )
+                    .map(
+                        normalizeUrl
+                    );
+              
+                if (
+                    vibecoded.includes(
+                        normalized
+                    )
+                ) {
+
+                    showResult(
+                        "yes",
+
+                        "Yes, It's Vibecoded",
+
+                        "This project is on the confirmed vibecoded list.",
+
+                        normalized
+                    );
+
+
+                    return;
+
+                }
+
+                if (
+                    human.includes(
+                        normalized
+                    )
+                ) {
+
+                    showResult(
+                        "no",
+
+                        "No, This Is Human Made",
+
+                        "This project is on the confirmed human-made list.",
+
+                        normalized
+                    );
+
+
+                    return;
+
+                }
+              
+                showResult(
+                    "unknown",
+
+                    "Not Confirmed Yet",
+
+                    "This project has not been added to either confirmation list.",
+
+                    normalized
+                );
+
+            }
+            catch (error) {
+
+                console.error(
+                    error
+                );
+
+
+                status.textContent =
+                    "Unable to complete the check.";
+
+
+                return;
+
+            }
+            finally {
+
+                checkButton.disabled =
+                    false;
+
+
+                if (
+                    status.textContent ===
+                    "Checking..."
+                ) {
+
+                    status.textContent =
+                        "";
+
+                }
+
+            }
+
+        }
+
+        checkButton.addEventListener(
+            "click",
+            checkUrl
+        );
+
+        urlInput.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key ===
+                    "Enter"
+                ) {
+
+                    checkUrl();
+
+                }
+
+            }
+        );
+
+        const query =
+            new URLSearchParams(
+                window.location.search
+            );
+
+
+        const queryUrl =
+            query.get(
+                "url"
+            );
+
+
+        if (
+            queryUrl
+        ) {
+
+            urlInput.value =
+                queryUrl;
+
+
+            checkUrl();
+
+        }
+
+    </script>
+
+</body>
+</html>
