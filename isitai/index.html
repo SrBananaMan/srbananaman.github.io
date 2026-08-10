@@ -914,12 +914,11 @@
 
             const response =
                 await fetch(
-                    "/isitai/list.json",
-                    {
-                        cache:
-                            "no-store"
-                    }
-                );
+                "https://raw.githubusercontent.com/SrBananaMan/isitai-database/main/list.json",
+                {
+                    cache: "no-store"
+                }
+        );
 
 
             if (!response.ok) {
