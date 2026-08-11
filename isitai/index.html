@@ -7,7 +7,17 @@
 
         <title>Is It AI? - SrBananaMan</title>
 
-        <meta name="description" content="Check whether a project has been confirmed as vibecoded." />
+        <meta name="description" content="Check whether a GitHub project has been confirmed as vibecoded." />
+
+        <meta property="og:title" content="Is It AI?" />
+
+        <meta property="og:description" content="Check whether a GitHub project has been confirmed as vibecoded." />
+
+        <meta property="og:image" content="https://srbananaman.com/isitai/images/default.png" />
+
+        <meta property="og:type" content="website" />
+
+        <meta property="og:site_name" content="Is It AI?" />
 
         <link rel="icon" type="image/png" href="/favicon.png" />
 
@@ -113,6 +123,7 @@
 
             .page-heading {
                 margin-bottom: 40px;
+
                 text-align: center;
             }
 
@@ -161,16 +172,10 @@
                 color: var(--text);
 
                 background: rgba(255, 255, 255, 0.055);
-
-                transition:
-                    border-color 0.2s ease,
-                    background 0.2s ease;
             }
 
             .url-input:focus {
                 border-color: var(--accent);
-
-                background: rgba(255, 255, 255, 0.075);
             }
 
             .check-button {
@@ -180,6 +185,7 @@
                 border-radius: 12px;
 
                 color: #081008;
+
                 background: var(--accent);
 
                 font-weight: 900;
@@ -199,7 +205,6 @@
 
             .check-button:disabled {
                 opacity: 0.6;
-
                 cursor: wait;
 
                 transform: none;
@@ -281,13 +286,44 @@
                 overflow-wrap: anywhere;
             }
 
+            .share-button {
+                display: none;
+
+                margin: 20px auto 0;
+                padding: 11px 18px;
+
+                border: 1px solid var(--border);
+                border-radius: 10px;
+
+                color: var(--text);
+
+                background: rgba(255, 255, 255, 0.06);
+
+                font-weight: 700;
+
+                cursor: pointer;
+
+                transition:
+                    background 0.2s ease,
+                    transform 0.2s ease;
+            }
+
+            .share-button.visible {
+                display: inline-block;
+            }
+
+            .share-button:hover {
+                background: rgba(255, 255, 255, 0.11);
+
+                transform: translateY(-2px);
+            }
+
             .review-form {
                 display: none;
 
                 max-width: 520px;
 
                 margin: 26px auto 0;
-
                 padding-top: 24px;
 
                 border-top: 1px solid var(--border);
@@ -321,7 +357,6 @@
 
             .review-form textarea {
                 width: 100%;
-
                 min-height: 110px;
 
                 padding: 14px 16px;
@@ -338,16 +373,10 @@
                 background: rgba(255, 255, 255, 0.055);
 
                 line-height: 1.5;
-
-                transition:
-                    border-color 0.2s ease,
-                    background 0.2s ease;
             }
 
             .review-form textarea:focus {
                 border-color: var(--accent);
-
-                background: rgba(255, 255, 255, 0.075);
             }
 
             .request-review-button {
@@ -360,29 +389,22 @@
                 border-radius: 11px;
 
                 color: #081008;
+
                 background: var(--accent);
 
                 font-weight: 800;
 
                 cursor: pointer;
-
-                transition:
-                    background 0.2s ease,
-                    transform 0.2s ease;
             }
 
             .request-review-button:hover {
                 background: var(--accent-hover);
-
-                transform: translateY(-2px);
             }
 
             .request-review-button:disabled {
                 opacity: 0.6;
 
                 cursor: wait;
-
-                transform: none;
             }
 
             .review-status {
@@ -480,6 +502,8 @@
 
                     <div class="checked-url" id="checked-url"></div>
 
+                    <button class="share-button" id="share-button" type="button">Copy Share Link</button>
+
                     <form class="review-form" id="review-form" action="https://formspree.io/f/mdengodg" method="POST">
                         <div class="review-heading">Request a Review</div>
 
@@ -526,6 +550,8 @@
 
             const checkedUrl = document.getElementById("checked-url");
 
+            const shareButton = document.getElementById("share-button");
+
             const reviewForm = document.getElementById("review-form");
 
             const reviewProject = document.getElementById("review-project");
@@ -535,6 +561,8 @@
             const requestReviewButton = document.getElementById("request-review-button");
 
             const reviewStatus = document.getElementById("review-status");
+
+            let currentShareUrl = "";
 
             function normalizeUrl(value) {
                 try {
@@ -649,6 +677,20 @@
                 checkedUrl.textContent = url;
 
                 hideReviewForm();
+
+                shareButton.classList.remove("visible");
+
+                currentShareUrl = "";
+
+                if (type === "yes") {
+                    currentShareUrl = `${window.location.origin}/isitai/vibecoded/?url=${encodeURIComponent(url)}`;
+
+                    shareButton.classList.add("visible");
+                } else if (type === "no") {
+                    currentShareUrl = `${window.location.origin}/isitai/human/?url=${encodeURIComponent(url)}`;
+
+                    shareButton.classList.add("visible");
+                }
             }
 
             function showReviewForm(url) {
@@ -696,6 +738,10 @@
 
                 hideReviewForm();
 
+                shareButton.classList.remove("visible");
+
+                currentShareUrl = "";
+
                 checkButton.disabled = true;
 
                 try {
@@ -727,7 +773,7 @@
                         showResult(
                             "no",
 
-                            "No, This Is Human Made",
+                            "No, It's Human Made",
 
                             "This repository has been manually confirmed as human made.",
 
@@ -755,7 +801,7 @@
                         showResult(
                             "no",
 
-                            "No, This Is Human Made",
+                            "No, It's Human Made",
 
                             "Repositories from this GitHub user or organization are classified as human made.",
 
@@ -792,6 +838,24 @@
                     }
                 }
             }
+
+            shareButton.addEventListener("click", async () => {
+                if (!currentShareUrl) {
+                    return;
+                }
+
+                try {
+                    await navigator.clipboard.writeText(currentShareUrl);
+
+                    shareButton.textContent = "Copied!";
+
+                    setTimeout(() => {
+                        shareButton.textContent = "Copy Share Link";
+                    }, 1200);
+                } catch {
+                    shareButton.textContent = "Copy Failed";
+                }
+            });
 
             reviewForm.addEventListener("submit", async (event) => {
                 event.preventDefault();
