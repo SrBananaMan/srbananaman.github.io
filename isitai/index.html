@@ -113,13 +113,11 @@
 
             .page-heading {
                 margin-bottom: 40px;
-
                 text-align: center;
             }
 
             .page-heading h1 {
                 font-size: clamp(3rem, 9vw, 6rem);
-
                 letter-spacing: -0.06em;
             }
 
@@ -137,7 +135,6 @@
                 padding: clamp(28px, 5vw, 48px);
 
                 border: 1px solid var(--border);
-
                 border-radius: 26px;
 
                 background: linear-gradient(135deg, rgba(94, 175, 91, 0.12), transparent 50%), var(--card);
@@ -157,7 +154,6 @@
                 padding: 15px 17px;
 
                 border: 1px solid var(--border);
-
                 border-radius: 12px;
 
                 outline: none;
@@ -181,11 +177,9 @@
                 padding: 15px 23px;
 
                 border: 0;
-
                 border-radius: 12px;
 
                 color: #081008;
-
                 background: var(--accent);
 
                 font-weight: 900;
@@ -234,7 +228,6 @@
                 padding: 32px 24px;
 
                 border: 1px solid var(--border);
-
                 border-radius: 18px;
 
                 text-align: center;
@@ -334,7 +327,6 @@
                 padding: 14px 16px;
 
                 border: 1px solid var(--border);
-
                 border-radius: 11px;
 
                 outline: none;
@@ -362,15 +354,12 @@
                 width: 100%;
 
                 margin-top: 12px;
-
                 padding: 13px 20px;
 
                 border: 0;
-
                 border-radius: 11px;
 
                 color: #081008;
-
                 background: var(--accent);
 
                 font-weight: 800;
@@ -634,91 +623,6 @@
                 return (entries || []).map(normalizeUrl).filter(Boolean);
             }
 
-            function normalizeContributorList(entries) {
-                return (entries || [])
-                    .map((value) => {
-                        let name = String(value).trim().toLowerCase();
-
-                        if (name.startsWith("https://github.com/")) {
-                            try {
-                                const url = new URL(name);
-
-                                const parts = url.pathname.split("/").filter(Boolean);
-
-                                if (parts.length) {
-                                    name = parts[0].toLowerCase();
-                                }
-                            } catch {
-                                return null;
-                            }
-                        }
-
-                        name = name.replace(/^@/, "");
-
-                        return name;
-                    })
-                    .filter(Boolean);
-            }
-
-            async function checkAIContributor(github, aiAccounts) {
-                if (!github || !aiAccounts.length) {
-                    return null;
-                }
-
-                try {
-                    let page = 1;
-
-                    while (page <= 10) {
-                        const response = await fetch(
-                            `https://api.github.com/repos/${github.owner}/${github.repo}/contributors?per_page=100&page=${page}`,
-                            {
-                                headers: {
-                                    Accept: "application/vnd.github+json",
-                                },
-
-                                cache: "no-store",
-                            }
-                        );
-
-                        if (!response.ok) {
-                            console.warn("Contributor lookup failed:", response.status);
-
-                            return null;
-                        }
-
-                        const contributors = await response.json();
-
-                        if (contributors.length === 0) {
-                            break;
-                        }
-
-                        for (const contributor of contributors) {
-                            const login = (contributor.login || "").trim().toLowerCase();
-
-                            if (aiAccounts.includes(login)) {
-                                return {
-                                    login: contributor.login,
-
-                                    contributions: contributor.contributions,
-                                };
-                            }
-                        }
-
-                        if (contributors.length < 100) {
-                            break;
-                        }
-
-                        page++;
-                    }
-
-                    return null;
-                } catch (error) {
-                    console.error("Contributor lookup failed:", error);
-
-                    return null;
-                }
-            }
-
             function hideReviewForm() {
                 reviewForm.classList.remove("visible");
 
@@ -805,8 +709,6 @@
 
                     const humanUsers = normalizeList(list.human_users);
 
-                    const aiAccounts = normalizeContributorList(list.ai_contributors);
-
                     if (vibecoded.includes(comparisonUrl)) {
                         showResult(
                             "yes",
@@ -841,7 +743,7 @@
 
                             "Yes, It's Vibecoded",
 
-                            "Repositories from this user are classified as vibecoded.",
+                            "Repositories from this GitHub user or organization are classified as vibecoded.",
 
                             comparisonUrl
                         );
@@ -855,25 +757,7 @@
 
                             "No, This Is Human Made",
 
-                            "Repositories from this user are classified as human made.",
-
-                            comparisonUrl
-                        );
-
-                        return;
-                    }
-
-                    status.textContent = "Checking contributors...";
-
-                    const aiContributor = await checkAIContributor(github, aiAccounts);
-
-                    if (aiContributor) {
-                        showResult(
-                            "yes",
-
-                            "Yes, It's Vibecoded",
-
-                            `${aiContributor.login} is listed as a contributor to this repository.`,
+                            "Repositories from this GitHub user or organization are classified as human made.",
 
                             comparisonUrl
                         );
@@ -903,7 +787,7 @@
                 } finally {
                     checkButton.disabled = false;
 
-                    if (status.textContent === "Checking..." || status.textContent === "Checking contributors...") {
+                    if (status.textContent === "Checking...") {
                         status.textContent = "";
                     }
                 }
