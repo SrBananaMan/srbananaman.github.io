@@ -464,6 +464,8 @@
                 <button class="tab active" data-tab="projects">Projects</button>
 
                 <button class="tab" data-tab="owners">User / Org Rules</button>
+
+                <button class="tab" data-tab="reviews">Reviews</button>
             </div>
 
             <div class="toolbar">
@@ -473,6 +475,13 @@
                     <option value="">All classifications</option>
                     <option value="vibecoded">Vibecoded</option>
                     <option value="human">Human Made</option>
+                </select>
+
+                <select id="review-status-filter" class="hidden">
+                    <option value="">All review statuses</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Reviewed">Reviewed</option>
+                    <option value="Dismissed">Dismissed</option>
                 </select>
 
                 <button id="refresh-button" class="secondary">Refresh</button>
@@ -499,6 +508,72 @@
                 <div id="empty" class="empty hidden">No entries found.</div>
             </section>
         </main>
+
+        <div id="review-overlay" class="modal-overlay hidden">
+            <section class="modal card">
+                <div class="modal-head">
+                    <div>
+                        <h2 id="review-title">Review Request</h2>
+                        <p id="review-subtitle"></p>
+                    </div>
+
+                    <button id="review-close" class="close" type="button">×</button>
+                </div>
+
+                <div class="form-grid">
+                    <div class="field wide">
+                        <label>Project</label>
+                        <input id="review-project-url" readonly />
+                    </div>
+
+                    <div class="field">
+                        <label>Type</label>
+                        <input id="review-type" readonly />
+                    </div>
+
+                    <div class="field">
+                        <label>Username</label>
+                        <input id="review-username" readonly />
+                    </div>
+
+                    <div class="field">
+                        <label>Current Classification</label>
+                        <input id="review-current" readonly />
+                    </div>
+
+                    <div class="field">
+                        <label>Requested Classification</label>
+                        <input id="review-requested" readonly />
+                    </div>
+
+                    <div class="field wide">
+                        <label>Reason</label>
+                        <textarea id="review-reason" readonly></textarea>
+                    </div>
+
+                    <div class="field">
+                        <label for="review-status-select">Status</label>
+                        <select id="review-status-select">
+                            <option value="Pending">Pending</option>
+                            <option value="Reviewed">Reviewed</option>
+                            <option value="Dismissed">Dismissed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button id="review-delete" class="danger" type="button">Delete</button>
+
+                    <div class="right-actions">
+                        <button id="review-cancel" class="secondary" type="button">Close</button>
+
+                        <button id="review-save" class="primary" type="button">Save Status</button>
+                    </div>
+                </div>
+
+                <div id="review-detail-status" class="status"></div>
+            </section>
+        </div>
 
         <div id="editor-overlay" class="modal-overlay hidden">
             <section class="modal card">
@@ -567,7 +642,7 @@
         </div>
 
         <script>
-            const API_BASE = "https://isitai-api.isitai-api.workers.dev";
+            const API_BASE = "https://YOUR-WORKER.workers.dev";
 
             const loginView = document.getElementById("login-view");
 
@@ -586,6 +661,8 @@
             const search = document.getElementById("search");
 
             const classificationFilter = document.getElementById("classification-filter");
+
+            const reviewStatusFilter = document.getElementById("review-status-filter");
 
             const newButton = document.getElementById("new-button");
 
@@ -625,9 +702,40 @@
 
             const entryFull = document.getElementById("entry-full");
 
+            const reviewOverlay = document.getElementById("review-overlay");
+
+            const reviewClose = document.getElementById("review-close");
+
+            const reviewCancel = document.getElementById("review-cancel");
+
+            const reviewSave = document.getElementById("review-save");
+
+            const reviewDelete = document.getElementById("review-delete");
+
+            const reviewTitle = document.getElementById("review-title");
+
+            const reviewSubtitle = document.getElementById("review-subtitle");
+
+            const reviewProjectUrl = document.getElementById("review-project-url");
+
+            const reviewType = document.getElementById("review-type");
+
+            const reviewUsername = document.getElementById("review-username");
+
+            const reviewCurrent = document.getElementById("review-current");
+
+            const reviewRequested = document.getElementById("review-requested");
+
+            const reviewReason = document.getElementById("review-reason");
+
+            const reviewStatusSelect = document.getElementById("review-status-select");
+
+            const reviewDetailStatus = document.getElementById("review-detail-status");
+
             let activeTab = "projects";
             let currentItems = [];
             let editing = null;
+            let selectedReview = null;
             let searchTimer = null;
 
             async function api(path, options = {}) {
@@ -725,8 +833,12 @@
                     const classification = encodeURIComponent(classificationFilter.value);
 
                     path = `/api/admin/projects?q=${q}&classification=${classification}&limit=200`;
-                } else {
+                } else if (activeTab === "owners") {
                     path = `/api/admin/owners?q=${q}`;
+                } else {
+                    const reviewStatus = encodeURIComponent(reviewStatusFilter.value);
+
+                    path = `/api/admin/reviews?q=${q}&status=${reviewStatus}`;
                 }
 
                 const data = await api(path);
@@ -781,6 +893,55 @@
 
                 for (const item of items) {
                     const tr = document.createElement("tr");
+
+                    if (activeTab === "reviews") {
+                        const project = document.createElement("td");
+
+                        project.className = "repo";
+
+                        project.textContent = item.project_url;
+
+                        const type = document.createElement("td");
+
+                        type.textContent =
+                            item.review_type === "classification_report" ? "Classification Report" : "New Project";
+
+                        const state = document.createElement("td");
+
+                        const stateBadge = document.createElement("span");
+
+                        stateBadge.className = "badge " + (item.status === "Reviewed" ? "human" : "vibecoded");
+
+                        stateBadge.textContent = item.status;
+
+                        state.appendChild(stateBadge);
+
+                        const completeCell = document.createElement("td");
+
+                        completeCell.textContent = item.username || "—";
+
+                        const updated = document.createElement("td");
+
+                        updated.textContent = item.created_at || "";
+
+                        const actions = document.createElement("td");
+
+                        const edit = document.createElement("button");
+
+                        edit.className = "small-button";
+
+                        edit.textContent = "Open";
+
+                        edit.addEventListener("click", () => openReview(item));
+
+                        actions.appendChild(edit);
+
+                        tr.append(project, type, state, completeCell, updated, actions);
+
+                        rows.appendChild(tr);
+
+                        continue;
+                    }
 
                     const name = document.createElement("td");
 
@@ -843,6 +1004,40 @@
 
                     rows.appendChild(tr);
                 }
+            }
+
+            function openReview(item) {
+                selectedReview = item;
+
+                reviewTitle.textContent =
+                    item.review_type === "classification_report" ? "Classification Report" : "New Project Review";
+
+                reviewSubtitle.textContent = `Submitted ${item.created_at || ""}`;
+
+                reviewProjectUrl.value = item.project_url || "";
+
+                reviewType.value =
+                    item.review_type === "classification_report" ? "Classification Report" : "New Project Review";
+
+                reviewUsername.value = item.username || "";
+
+                reviewCurrent.value = item.current_classification || "";
+
+                reviewRequested.value = item.requested_classification || "";
+
+                reviewReason.value = item.reason || "";
+
+                reviewStatusSelect.value = item.status || "Pending";
+
+                reviewDetailStatus.textContent = "";
+
+                reviewOverlay.classList.remove("hidden");
+            }
+
+            function closeReview() {
+                reviewOverlay.classList.add("hidden");
+
+                selectedReview = null;
             }
 
             function openEditor(item = null) {
@@ -961,7 +1156,71 @@
                 }
             });
 
-            newButton.addEventListener("click", () => openEditor());
+            newButton.addEventListener("click", () => {
+                if (activeTab !== "reviews") {
+                    openEditor();
+                }
+            });
+
+            reviewClose.addEventListener("click", closeReview);
+
+            reviewCancel.addEventListener("click", closeReview);
+
+            reviewOverlay.addEventListener("click", (event) => {
+                if (event.target === reviewOverlay) {
+                    closeReview();
+                }
+            });
+
+            reviewSave.addEventListener("click", async () => {
+                if (!selectedReview) {
+                    return;
+                }
+
+                reviewSave.disabled = true;
+                reviewDetailStatus.textContent = "Saving...";
+
+                try {
+                    await api(`/api/admin/reviews/${selectedReview.id}`, {
+                        method: "PUT",
+                        body: JSON.stringify({
+                            status: reviewStatusSelect.value,
+                        }),
+                    });
+
+                    closeReview();
+                    await loadEntries();
+                } catch (error) {
+                    reviewDetailStatus.className = "status error";
+
+                    reviewDetailStatus.textContent = error.message;
+                } finally {
+                    reviewSave.disabled = false;
+                }
+            });
+
+            reviewDelete.addEventListener("click", async () => {
+                if (!selectedReview) {
+                    return;
+                }
+
+                if (!confirm("Delete this review? This cannot be undone.")) {
+                    return;
+                }
+
+                try {
+                    await api(`/api/admin/reviews/${selectedReview.id}`, {
+                        method: "DELETE",
+                    });
+
+                    closeReview();
+                    await loadEntries();
+                } catch (error) {
+                    reviewDetailStatus.className = "status error";
+
+                    reviewDetailStatus.textContent = error.message;
+                }
+            });
 
             editorClose.addEventListener("click", closeEditor);
 
@@ -974,7 +1233,15 @@
             });
 
             document.addEventListener("keydown", (event) => {
-                if (event.key === "Escape" && !editorOverlay.classList.contains("hidden")) {
+                if (event.key !== "Escape") {
+                    return;
+                }
+
+                if (!reviewOverlay.classList.contains("hidden")) {
+                    closeReview();
+                }
+
+                if (!editorOverlay.classList.contains("hidden")) {
                     closeEditor();
                 }
             });
@@ -987,12 +1254,61 @@
                         .querySelectorAll(".tab")
                         .forEach((other) => other.classList.toggle("active", other === tab));
 
-                    nameHeading.textContent = activeTab === "projects" ? "Repository" : "User / Organization";
+                    if (activeTab === "projects") {
+                        nameHeading.textContent = "Repository";
 
-                    search.placeholder =
-                        activeTab === "projects" ? "Search repository..." : "Search user or organization...";
+                        search.placeholder = "Search repository...";
 
-                    newButton.textContent = activeTab === "projects" ? "+ Add Project" : "+ Add Rule";
+                        newButton.textContent = "+ Add Project";
+
+                        newButton.classList.remove("hidden");
+
+                        classificationFilter.classList.remove("hidden");
+
+                        reviewStatusFilter.classList.add("hidden");
+                    } else if (activeTab === "owners") {
+                        nameHeading.textContent = "User / Organization";
+
+                        search.placeholder = "Search user or organization...";
+
+                        newButton.textContent = "+ Add Rule";
+
+                        newButton.classList.remove("hidden");
+
+                        classificationFilter.classList.remove("hidden");
+
+                        reviewStatusFilter.classList.add("hidden");
+                    } else {
+                        nameHeading.textContent = "Project";
+
+                        search.placeholder = "Search reviews...";
+
+                        newButton.classList.add("hidden");
+
+                        classificationFilter.classList.add("hidden");
+
+                        reviewStatusFilter.classList.remove("hidden");
+
+                        const headings = document.querySelectorAll("thead th");
+
+                        if (headings.length >= 5) {
+                            headings[1].textContent = "Type";
+                            headings[2].textContent = "Status";
+                            headings[3].textContent = "Username";
+                            headings[4].textContent = "Submitted";
+                        }
+                    }
+
+                    if (activeTab !== "reviews") {
+                        const headings = document.querySelectorAll("thead th");
+
+                        if (headings.length >= 5) {
+                            headings[1].textContent = "Classification";
+                            headings[2].textContent = "State";
+                            headings[3].textContent = "Complete";
+                            headings[4].textContent = "Updated";
+                        }
+                    }
 
                     await loadEntries();
                 });
@@ -1005,6 +1321,8 @@
             });
 
             classificationFilter.addEventListener("change", loadEntries);
+
+            reviewStatusFilter.addEventListener("change", loadEntries);
 
             refreshButton.addEventListener("click", loadEntries);
 
