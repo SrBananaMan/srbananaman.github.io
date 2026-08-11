@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>No, It's Human Made</title>
+
+    <meta
+        property="og:type"
+        content="website"
+    >
+
+    <meta
+        property="og:site_name"
+        content="Is It AI?"
+    >
+
+    <meta
+        property="og:title"
+        content="No, It's Human Made"
+    >
+
+    <meta
+        property="og:description"
+        content="This repository has been confirmed as human made."
+    >
+
+    <meta
+        property="og:image"
+        content="https://srbananaman.com/isitai/images/human.png"
+    >
+
+    <meta
+        name="theme-color"
+        content="#75d66f"
+    >
+
+    <script>
+        const url =
+            new URLSearchParams(
+                window.location.search
+            ).get("url");
+
+        window.location.replace(
+            url
+                ? "/isitai/?url=" +
+                  encodeURIComponent(url)
+                : "/isitai/"
+        );
+    </script>
+</head>
+
+<body></body>
+</html>
