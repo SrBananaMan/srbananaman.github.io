@@ -1,54 +1,28 @@
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+    <head>
+        <meta charset="UTF-8" />
 
-    <title>No, It's Human Made</title>
+        <title>Is It AI?</title>
 
-    <meta
-        property="og:type"
-        content="website"
-    >
+        <meta property="og:image" content="https://srbananaman.com/isitai/images/human.png" />
 
-    <meta
-        property="og:site_name"
-        content="Is It AI?"
-    >
+        <meta property="og:image:width" content="1200" />
 
-    <meta
-        property="og:title"
-        content="No, It's Human Made"
-    >
+        <meta property="og:image:height" content="630" />
 
-    <meta
-        property="og:description"
-        content="This repository has been confirmed as human made."
-    >
+        <meta name="twitter:card" content="summary_large_image" />
 
-    <meta
-        property="og:image"
-        content="https://srbananaman.com/isitai/images/human.png"
-    >
+        <meta name="twitter:image" content="https://srbananaman.com/isitai/images/human.png" />
 
-    <meta
-        name="theme-color"
-        content="#75d66f"
-    >
+        <meta name="theme-color" content="#75d66f" />
 
-    <script>
-        const url =
-            new URLSearchParams(
-                window.location.search
-            ).get("url");
+        <script>
+            const url = new URLSearchParams(window.location.search).get("url");
 
-        window.location.replace(
-            url
-                ? "/isitai/?url=" +
-                  encodeURIComponent(url)
-                : "/isitai/"
-        );
-    </script>
-</head>
+            window.location.replace(url ? "/isitai/?url=" + encodeURIComponent(url) : "/isitai/");
+        </script>
+    </head>
 
-<body></body>
+    <body></body>
 </html>
