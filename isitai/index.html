@@ -72,7 +72,6 @@
 
             header {
                 width: min(1100px, calc(100% - 40px));
-
                 margin: 0 auto;
                 padding: 28px 0;
 
@@ -95,7 +94,6 @@
 
             .nav-link {
                 color: var(--text-secondary);
-
                 font-weight: 600;
 
                 transition: color 0.2s ease;
@@ -107,15 +105,12 @@
 
             main {
                 width: min(800px, calc(100% - 40px));
-
                 margin: 0 auto;
-
                 padding: 80px 0 140px;
             }
 
             .page-heading {
                 margin-bottom: 40px;
-
                 text-align: center;
             }
 
@@ -127,7 +122,6 @@
 
             .page-heading p {
                 max-width: 620px;
-
                 margin: 16px auto 0;
 
                 color: var(--text-secondary);
@@ -149,13 +143,11 @@
 
             .input-row {
                 display: flex;
-
                 gap: 12px;
             }
 
             .url-input {
                 flex: 1;
-
                 min-width: 0;
 
                 padding: 15px 17px;
@@ -481,7 +473,7 @@
             <div class="page-heading">
                 <h1>Is It AI?</h1>
 
-                <p>Enter a project URL to check whether it has been confirmed as vibecoded.</p>
+                <p>Enter a GitHub repository URL to check whether it has been confirmed as vibecoded.</p>
             </div>
 
             <div class="checker-card">
@@ -529,9 +521,7 @@
                     </form>
                 </div>
 
-                <p class="rule-note">
-                    Results are based on confirmed classifications and GitHub contributor information.
-                </p>
+                <p class="rule-note">Manual classifications take priority over automatic contributor checks.</p>
             </div>
         </main>
 
@@ -569,6 +559,7 @@
                     const url = new URL(value.trim());
 
                     url.search = "";
+
                     url.hash = "";
 
                     let normalized = url.toString();
@@ -591,7 +582,7 @@
                 try {
                     const url = new URL(value);
 
-                    if (url.hostname !== "github.com" && url.hostname !== "www.github.com") {
+                    if (url.hostname.toLowerCase() !== "github.com") {
                         return null;
                     }
 
@@ -617,6 +608,14 @@
                 }
 
                 return normalizeUrl(`https://github.com/${github.owner}/${github.repo}`);
+            }
+
+            function getGitHubOwnerUrl(github) {
+                if (!github) {
+                    return null;
+                }
+
+                return normalizeUrl(`https://github.com/${github.owner}`);
             }
 
             async function loadList() {
@@ -706,6 +705,10 @@
                 reviewForm.classList.add("visible");
             }
 
+            function normalizeList(entries) {
+                return (entries || []).map(normalizeUrl).filter(Boolean);
+            }
+
             async function checkUrl() {
                 const originalValue = urlInput.value.trim();
 
@@ -723,7 +726,19 @@
 
                 const github = getGitHubRepository(normalized);
 
-                const comparisonUrl = getRepositoryUrl(github) || normalized;
+                if (!github) {
+                    status.className = "status error";
+
+                    status.textContent = "Enter a GitHub repository URL.";
+
+                    result.className = "result";
+
+                    return;
+                }
+
+                const comparisonUrl = getRepositoryUrl(github);
+
+                const ownerUrl = getGitHubOwnerUrl(github);
 
                 status.className = "status";
 
@@ -738,23 +753,13 @@
                 try {
                     const [list, aiContributor] = await Promise.all([loadList(), checkAIContributor(github)]);
 
-                    if (aiContributor) {
-                        showResult(
-                            "yes",
+                    const vibecoded = normalizeList(list.vibecoded);
 
-                            "Yes, It's Vibecoded",
+                    const human = normalizeList(list.human);
 
-                            `${aiContributor} was found in the GitHub contributor list.`,
+                    const vibecodedUsers = normalizeList(list.vibecoded_users);
 
-                            comparisonUrl
-                        );
-
-                        return;
-                    }
-
-                    const vibecoded = (list.vibecoded || []).map(normalizeUrl).filter(Boolean);
-
-                    const human = (list.human || []).map(normalizeUrl).filter(Boolean);
+                    const humanUsers = normalizeList(list.human_users);
 
                     if (vibecoded.includes(comparisonUrl)) {
                         showResult(
@@ -762,7 +767,7 @@
 
                             "Yes, It's Vibecoded",
 
-                            "This project has been confirmed as vibecoded.",
+                            "This repository has been manually confirmed as vibecoded.",
 
                             comparisonUrl
                         );
@@ -776,7 +781,49 @@
 
                             "No, This Is Human Made",
 
-                            "This project has been confirmed as human made.",
+                            "This repository has been manually confirmed as human made.",
+
+                            comparisonUrl
+                        );
+
+                        return;
+                    }
+
+                    if (ownerUrl && vibecodedUsers.includes(ownerUrl)) {
+                        showResult(
+                            "yes",
+
+                            "Yes, It's Vibecoded",
+
+                            "Repositories from this GitHub user or organization are classified as vibecoded.",
+
+                            comparisonUrl
+                        );
+
+                        return;
+                    }
+
+                    if (ownerUrl && humanUsers.includes(ownerUrl)) {
+                        showResult(
+                            "no",
+
+                            "No, This Is Human Made",
+
+                            "Repositories from this GitHub user or organization are classified as human made.",
+
+                            comparisonUrl
+                        );
+
+                        return;
+                    }
+
+                    if (aiContributor) {
+                        showResult(
+                            "yes",
+
+                            "Yes, It's Vibecoded",
+
+                            `${aiContributor} was found in the GitHub contributor list.`,
 
                             comparisonUrl
                         );
