@@ -505,7 +505,9 @@
 
                         <input type="hidden" name="Source" value="SrBananaMan IsItAI" />
 
-                        <label for="review-reason"> Why should this project be reviewed/Do you have an idea if it's AI or not? </label>
+                        <label for="review-reason">
+                            Why should this project be reviewed/Do you have an idea if it's AI or not?
+                        </label>
 
                         <textarea
                             id="review-reason"
@@ -636,39 +638,112 @@
                     return null;
                 }
 
-                const apiUrl =
-                    `https://api.github.com/repos/` +
-                    `${github.owner}/` +
-                    `${github.repo}/contributors` +
-                    `?per_page=100`;
+                const repoBase = `https://api.github.com/repos/${github.owner}/${github.repo}`;
 
                 try {
-                    const response = await fetch(apiUrl, {
+                    const contributorResponse = await fetch(`${repoBase}/contributors?per_page=100`, {
                         headers: {
                             Accept: "application/vnd.github+json",
                         },
                     });
 
-                    if (!response.ok) {
-                        return null;
+                    if (contributorResponse.ok) {
+                        const contributors = await contributorResponse.json();
+
+                        for (const contributor of contributors) {
+                            const login = (contributor.login || "").toLowerCase();
+
+                            if (login.includes("claude") || login.includes("codex")) {
+                                return {
+                                    match: contributor.login,
+
+                                    reason: "GitHub contributor",
+                                };
+                            }
+                        }
                     }
 
-                    const contributors = await response.json();
+                    const commitsResponse = await fetch(`${repoBase}/commits?per_page=100`, {
+                        headers: {
+                            Accept: "application/vnd.github+json",
+                        },
+                    });
 
-                    for (const contributor of contributors) {
-                        const login = (contributor.login || "").toLowerCase();
+                    if (commitsResponse.ok) {
+                        const commits = await commitsResponse.json();
 
-                        if (login.includes("claude") || login.includes("codex") || login.includes("copilot") || login.includes("cursoragent")) {
-                            return contributor.login || "AI contributor";
+                        for (const commit of commits) {
+                            const githubAuthor = (commit.author?.login || "").toLowerCase();
+
+                            const githubCommitter = (commit.committer?.login || "").toLowerCase();
+
+                            const authorName = (commit.commit?.author?.name || "").toLowerCase();
+
+                            const committerName = (commit.commit?.committer?.name || "").toLowerCase();
+
+                            const message = (commit.commit?.message || "").toLowerCase();
+
+                            const fields = [
+                                {
+                                    value: githubAuthor,
+
+                                    original: commit.author?.login,
+
+                                    reason: "GitHub commit author",
+                                },
+
+                                {
+                                    value: githubCommitter,
+
+                                    original: commit.committer?.login,
+
+                                    reason: "GitHub committer",
+                                },
+
+                                {
+                                    value: authorName,
+
+                                    original: commit.commit?.author?.name,
+
+                                    reason: "commit author",
+                                },
+
+                                {
+                                    value: committerName,
+
+                                    original: commit.commit?.committer?.name,
+
+                                    reason: "commit committer",
+                                },
+                            ];
+
+                            for (const field of fields) {
+                                if (field.value.includes("claude") || field.value.includes("codex")) {
+                                    return {
+                                        match: field.original,
+
+                                        reason: field.reason,
+                                    };
+                                }
+                            }
+
+                            if (message.includes("claude") || message.includes("codex")) {
+                                return {
+                                    match: message.includes("claude") ? "Claude" : "Codex",
+
+                                    reason: "commit message",
+                                };
+                            }
                         }
                     }
 
                     return null;
-                } catch {
+                } catch (error) {
+                    console.error("AI contributor check failed:", error);
+
                     return null;
                 }
             }
-
             function hideReviewForm() {
                 reviewForm.classList.remove("visible");
 
