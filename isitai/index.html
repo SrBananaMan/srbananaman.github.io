@@ -704,7 +704,7 @@
             <div class="page-heading">
                 <h1>Is It AI?</h1>
 
-                <p>Enter a GitHub repository URL to check whether it has been confirmed as vibecoded.</p>
+                <p>Enter a GitHub repository URL to check whether it has been confirmed with signs of AI usage.</p>
             </div>
 
             <div class="checker-card">
@@ -1105,7 +1105,7 @@
                 } else if (type === "no") {
                     currentShareUrl = `${window.location.origin}/isitai/human/?url=${encodeURIComponent(url)}`;
 
-                    reportButton.textContent = "Report as Vibecoded";
+                    reportButton.textContent = "Report as AI";
 
                     resultActions.classList.add("visible");
                 }
@@ -1125,7 +1125,7 @@
 
                 infoModalTitle.textContent =
                     classification === "Vibecoded"
-                        ? "Why It's Classified as Vibecoded"
+                        ? "Why It's Classified as AI"
                         : classification === "Human Made"
                           ? "Why It's Classified as Human Made"
                           : "Project Information";
@@ -1263,7 +1263,7 @@
                             "Yes, It Uses AI",
                             entry.source === "owner"
                                 ? "This repository is covered by a GitHub user or organization classification."
-                                : "This repository has been manually confirmed as vibecoded.",
+                                : "This repository has been manually confirmed as AI.",
                             comparisonUrl,
                             info
                         );
