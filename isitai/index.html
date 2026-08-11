@@ -582,6 +582,65 @@
                 overflow-wrap: anywhere;
             }
 
+            .classification-details {
+                display: none;
+                max-width: 620px;
+                margin: 20px auto 0;
+                text-align: left;
+            }
+
+            .classification-details.visible {
+                display: block;
+            }
+
+            .classification-details ul {
+                margin: 0;
+                padding-left: 22px;
+                color: var(--text-secondary);
+                line-height: 1.65;
+            }
+
+            .classification-details li + li {
+                margin-top: 6px;
+            }
+
+            .more-info-button {
+                display: none;
+                margin: 16px auto 0;
+                padding: 9px 14px;
+                border: 0;
+                background: transparent;
+                color: var(--accent);
+                font-weight: 800;
+                cursor: pointer;
+            }
+
+            .more-info-button.visible {
+                display: inline-block;
+            }
+
+            .more-info-button:hover {
+                text-decoration: underline;
+            }
+
+            .info-state {
+                display: inline-flex;
+                margin: 0 0 18px;
+                padding: 6px 10px;
+                border: 1px solid var(--border);
+                border-radius: 999px;
+                color: var(--text-secondary);
+                background: rgba(255, 255, 255, 0.04);
+                font-size: 0.82rem;
+                font-weight: 800;
+            }
+
+            .info-full {
+                color: var(--text-secondary);
+                line-height: 1.75;
+                white-space: pre-wrap;
+            }
+
             footer {
                 border-top: 1px solid var(--border);
 
@@ -670,6 +729,12 @@
 
                     <div class="checked-url" id="checked-url"></div>
 
+                    <div class="classification-details" id="classification-details">
+                        <ul id="classification-short-list"></ul>
+                    </div>
+
+                    <button class="more-info-button" id="more-info-button" type="button">More Info</button>
+
                     <div class="result-actions" id="result-actions">
                         <button class="share-button" id="share-button" type="button">Copy Share Link</button>
 
@@ -718,6 +783,23 @@
                 </div>
             </div>
         </main>
+
+        <div class="modal-overlay" id="info-modal">
+            <div class="modal" role="dialog" aria-modal="true" aria-labelledby="info-modal-title">
+                <div class="modal-header">
+                    <div>
+                        <div class="modal-title" id="info-modal-title">Project Information</div>
+                        <p class="modal-description" id="info-modal-description"></p>
+                    </div>
+
+                    <button class="modal-close" id="info-modal-close" type="button" aria-label="Close">×</button>
+                </div>
+
+                <div class="info-state" id="info-state"></div>
+
+                <div class="info-full" id="info-full"></div>
+            </div>
+        </div>
 
         <div class="modal-overlay" id="report-modal">
             <div class="modal" role="dialog" aria-modal="true" aria-labelledby="report-modal-title">
@@ -797,6 +879,17 @@
 
             const checkedUrl = document.getElementById("checked-url");
 
+            const classificationDetails = document.getElementById("classification-details");
+            const classificationShortList = document.getElementById("classification-short-list");
+            const moreInfoButton = document.getElementById("more-info-button");
+
+            const infoModal = document.getElementById("info-modal");
+            const infoModalClose = document.getElementById("info-modal-close");
+            const infoModalTitle = document.getElementById("info-modal-title");
+            const infoModalDescription = document.getElementById("info-modal-description");
+            const infoState = document.getElementById("info-state");
+            const infoFull = document.getElementById("info-full");
+
             const resultActions = document.getElementById("result-actions");
 
             const shareButton = document.getElementById("share-button");
@@ -846,6 +939,8 @@
             let currentResultType = null;
 
             let currentProjectUrl = "";
+
+            let currentClassificationInfo = null;
 
             function normalizeUrl(value) {
                 try {
@@ -930,8 +1025,94 @@
                 return await response.json();
             }
 
-            function normalizeList(entries) {
-                return (entries || []).map(normalizeUrl).filter(Boolean);
+            function normalizeEntries(entries) {
+                return (entries || [])
+                    .map((entry) => {
+                        if (typeof entry === "string") {
+                            const url = normalizeUrl(entry);
+
+                            if (!url) {
+                                return null;
+                            }
+
+                            return {
+                                url,
+                                short: [],
+                                full: "",
+                                state: "Confirmed",
+                            };
+                        }
+
+                        if (!entry || typeof entry !== "object") {
+                            return null;
+                        }
+
+                        const url = normalizeUrl(entry.url || "");
+
+                        if (!url) {
+                            return null;
+                        }
+
+                        const short = Array.isArray(entry.short)
+                            ? entry.short.map((item) => String(item).trim()).filter(Boolean)
+                            : entry.short
+                              ? [String(entry.short).trim()]
+                              : [];
+
+                        return {
+                            url,
+                            short,
+                            full: entry.full ? String(entry.full).trim() : "",
+                            state: entry.state ? String(entry.state).trim() : "Confirmed",
+                        };
+                    })
+                    .filter(Boolean);
+            }
+
+            function findEntry(entries, url) {
+                return entries.find((entry) => entry.url === url) || null;
+            }
+
+            function normalizeUserList(entries) {
+                return (entries || [])
+                    .map((entry) => {
+                        if (typeof entry === "string") {
+                            const url = normalizeUrl(entry);
+
+                            return url
+                                ? {
+                                      url,
+                                      short: [],
+                                      full: "",
+                                      state: "Confirmed",
+                                  }
+                                : null;
+                        }
+
+                        if (!entry || typeof entry !== "object") {
+                            return null;
+                        }
+
+                        const url = normalizeUrl(entry.url || "");
+
+                        if (!url) {
+                            return null;
+                        }
+
+                        const short = Array.isArray(entry.short)
+                            ? entry.short.map((item) => String(item).trim()).filter(Boolean)
+                            : entry.short
+                              ? [String(entry.short).trim()]
+                              : [];
+
+                        return {
+                            url,
+                            short,
+                            full: entry.full ? String(entry.full).trim() : "",
+                            state: entry.state ? String(entry.state).trim() : "Confirmed",
+                        };
+                    })
+                    .filter(Boolean);
             }
 
             function resetReviewForm() {
@@ -968,9 +1149,14 @@
                 currentProjectUrl = "";
 
                 shareButton.textContent = "Copy Share Link";
+
+                classificationDetails.classList.remove("visible");
+                classificationShortList.innerHTML = "";
+                moreInfoButton.classList.remove("visible");
+                currentClassificationInfo = null;
             }
 
-            function showResult(type, answer, reason, url) {
+            function showResult(type, answer, reason, url, info = null) {
                 result.className = "result visible " + type;
 
                 resultAnswer.textContent = answer;
@@ -987,6 +1173,24 @@
 
                 currentProjectUrl = url;
 
+                currentClassificationInfo = info;
+
+                if (info && info.short && info.short.length) {
+                    classificationShortList.innerHTML = "";
+
+                    for (const item of info.short) {
+                        const li = document.createElement("li");
+                        li.textContent = item;
+                        classificationShortList.appendChild(li);
+                    }
+
+                    classificationDetails.classList.add("visible");
+                }
+
+                if (info && (info.full || info.state)) {
+                    moreInfoButton.classList.add("visible");
+                }
+
                 if (type === "yes") {
                     currentShareUrl = `${window.location.origin}/isitai/vibecoded/?url=${encodeURIComponent(url)}`;
 
@@ -1000,6 +1204,41 @@
 
                     resultActions.classList.add("visible");
                 }
+            }
+
+            function openInfoModal() {
+                if (!currentClassificationInfo) {
+                    return;
+                }
+
+                const classification =
+                    currentResultType === "yes"
+                        ? "Vibecoded"
+                        : currentResultType === "no"
+                          ? "Human Made"
+                          : "Unconfirmed";
+
+                infoModalTitle.textContent =
+                    classification === "Vibecoded"
+                        ? "Why It's Classified as Vibecoded"
+                        : classification === "Human Made"
+                          ? "Why It's Classified as Human Made"
+                          : "Project Information";
+
+                infoModalDescription.textContent = currentProjectUrl;
+
+                infoState.textContent = currentClassificationInfo.state || "Confirmed";
+
+                infoFull.textContent =
+                    currentClassificationInfo.full || "No additional information has been added for this project yet.";
+
+                infoModal.classList.add("visible");
+                document.body.classList.add("modal-open");
+            }
+
+            function closeInfoModal() {
+                infoModal.classList.remove("visible");
+                document.body.classList.remove("modal-open");
             }
 
             function openReportModal() {
@@ -1096,65 +1335,65 @@
                 try {
                     const list = await loadList();
 
-                    const vibecoded = normalizeList(list.vibecoded);
+                    const vibecoded = normalizeEntries(list.vibecoded);
 
-                    const human = normalizeList(list.human);
+                    const human = normalizeEntries(list.human);
 
-                    const vibecodedUsers = normalizeList(list.vibecoded_users);
+                    const vibecodedUsers = normalizeUserList(list.vibecoded_users);
 
-                    const humanUsers = normalizeList(list.human_users);
+                    const humanUsers = normalizeUserList(list.human_users);
 
-                    if (vibecoded.includes(comparisonUrl)) {
+                    const vibecodedEntry = findEntry(vibecoded, comparisonUrl);
+
+                    if (vibecodedEntry) {
                         showResult(
                             "yes",
-
                             "Yes, It's Vibecoded",
-
                             "This repository has been manually confirmed as vibecoded.",
-
-                            comparisonUrl
+                            comparisonUrl,
+                            vibecodedEntry
                         );
 
                         return;
                     }
 
-                    if (human.includes(comparisonUrl)) {
+                    const humanEntry = findEntry(human, comparisonUrl);
+
+                    if (humanEntry) {
                         showResult(
                             "no",
-
                             "No, It's Human Made",
-
                             "This repository has been manually confirmed as human made.",
-
-                            comparisonUrl
+                            comparisonUrl,
+                            humanEntry
                         );
 
                         return;
                     }
 
-                    if (ownerUrl && vibecodedUsers.includes(ownerUrl)) {
+                    const vibecodedUserEntry = ownerUrl && findEntry(vibecodedUsers, ownerUrl);
+
+                    if (vibecodedUserEntry) {
                         showResult(
                             "yes",
-
                             "Yes, It's Vibecoded",
-
                             "Repositories from this GitHub user or organization are classified as vibecoded.",
-
-                            comparisonUrl
+                            comparisonUrl,
+                            vibecodedUserEntry
                         );
 
                         return;
                     }
 
-                    if (ownerUrl && humanUsers.includes(ownerUrl)) {
+                    const humanUserEntry = ownerUrl && findEntry(humanUsers, ownerUrl);
+
+                    if (humanUserEntry) {
                         showResult(
                             "no",
-
                             "No, It's Human Made",
-
                             "Repositories from this GitHub user or organization are classified as human made.",
-
-                            comparisonUrl
+                            comparisonUrl,
+                            humanUserEntry
                         );
 
                         return;
@@ -1206,6 +1445,16 @@
                 }
             });
 
+            moreInfoButton.addEventListener("click", openInfoModal);
+
+            infoModalClose.addEventListener("click", closeInfoModal);
+
+            infoModal.addEventListener("click", (event) => {
+                if (event.target === infoModal) {
+                    closeInfoModal();
+                }
+            });
+
             reportButton.addEventListener("click", openReportModal);
 
             modalClose.addEventListener("click", closeReportModal);
@@ -1217,7 +1466,15 @@
             });
 
             document.addEventListener("keydown", (event) => {
-                if (event.key === "Escape" && reportModal.classList.contains("visible")) {
+                if (event.key !== "Escape") {
+                    return;
+                }
+
+                if (infoModal.classList.contains("visible")) {
+                    closeInfoModal();
+                }
+
+                if (reportModal.classList.contains("visible")) {
                     closeReportModal();
                 }
             });
