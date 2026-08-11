@@ -72,6 +72,7 @@
 
             header {
                 width: min(1100px, calc(100% - 40px));
+
                 margin: 0 auto;
                 padding: 28px 0;
 
@@ -105,12 +106,14 @@
 
             main {
                 width: min(800px, calc(100% - 40px));
+
                 margin: 0 auto;
                 padding: 80px 0 140px;
             }
 
             .page-heading {
                 margin-bottom: 40px;
+
                 text-align: center;
             }
 
@@ -122,6 +125,7 @@
 
             .page-heading p {
                 max-width: 620px;
+
                 margin: 16px auto 0;
 
                 color: var(--text-secondary);
@@ -412,17 +416,6 @@
                 color: var(--error);
             }
 
-            .rule-note {
-                margin-top: 26px;
-
-                color: var(--text-secondary);
-
-                font-size: 0.83rem;
-                line-height: 1.6;
-
-                text-align: center;
-            }
-
             footer {
                 border-top: 1px solid var(--border);
 
@@ -620,8 +613,12 @@
 
             async function loadList() {
                 const response = await fetch(
-                    "https://raw.githubusercontent.com/SrBananaMan/isitai-database/main/list.json",
+                    "https://api.github.com/repos/SrBananaMan/isitai-database/contents/list.json",
                     {
+                        headers: {
+                            Accept: "application/vnd.github.raw+json",
+                        },
+
                         cache: "no-store",
                     }
                 );
@@ -633,117 +630,95 @@
                 return await response.json();
             }
 
-            async function checkAIContributor(github) {
-                if (!github) {
+            function normalizeList(entries) {
+                return (entries || []).map(normalizeUrl).filter(Boolean);
+            }
+
+            function normalizeContributorList(entries) {
+                return (entries || [])
+                    .map((value) => {
+                        let name = String(value).trim().toLowerCase();
+
+                        if (name.startsWith("https://github.com/")) {
+                            try {
+                                const url = new URL(name);
+
+                                const parts = url.pathname.split("/").filter(Boolean);
+
+                                if (parts.length) {
+                                    name = parts[0].toLowerCase();
+                                }
+                            } catch {
+                                return null;
+                            }
+                        }
+
+                        name = name.replace(/^@/, "");
+
+                        return name;
+                    })
+                    .filter(Boolean);
+            }
+
+            async function checkAIContributor(github, aiAccounts) {
+                if (!github || !aiAccounts.length) {
                     return null;
                 }
 
-                const repoBase = `https://api.github.com/repos/${github.owner}/${github.repo}`;
-
                 try {
-                    const contributorResponse = await fetch(`${repoBase}/contributors?per_page=100`, {
-                        headers: {
-                            Accept: "application/vnd.github+json",
-                        },
-                    });
+                    let page = 1;
 
-                    if (contributorResponse.ok) {
-                        const contributors = await contributorResponse.json();
+                    while (page <= 10) {
+                        const response = await fetch(
+                            `https://api.github.com/repos/${github.owner}/${github.repo}/contributors?per_page=100&page=${page}`,
+                            {
+                                headers: {
+                                    Accept: "application/vnd.github+json",
+                                },
+
+                                cache: "no-store",
+                            }
+                        );
+
+                        if (!response.ok) {
+                            console.warn("Contributor lookup failed:", response.status);
+
+                            return null;
+                        }
+
+                        const contributors = await response.json();
+
+                        if (contributors.length === 0) {
+                            break;
+                        }
 
                         for (const contributor of contributors) {
-                            const login = (contributor.login || "").toLowerCase();
+                            const login = (contributor.login || "").trim().toLowerCase();
 
-                            if (login.includes("claude") || login.includes("codex")) {
+                            if (aiAccounts.includes(login)) {
                                 return {
-                                    match: contributor.login,
+                                    login: contributor.login,
 
-                                    reason: "GitHub contributor",
+                                    contributions: contributor.contributions,
                                 };
                             }
                         }
-                    }
 
-                    const commitsResponse = await fetch(`${repoBase}/commits?per_page=100`, {
-                        headers: {
-                            Accept: "application/vnd.github+json",
-                        },
-                    });
-
-                    if (commitsResponse.ok) {
-                        const commits = await commitsResponse.json();
-
-                        for (const commit of commits) {
-                            const githubAuthor = (commit.author?.login || "").toLowerCase();
-
-                            const githubCommitter = (commit.committer?.login || "").toLowerCase();
-
-                            const authorName = (commit.commit?.author?.name || "").toLowerCase();
-
-                            const committerName = (commit.commit?.committer?.name || "").toLowerCase();
-
-                            const message = (commit.commit?.message || "").toLowerCase();
-
-                            const fields = [
-                                {
-                                    value: githubAuthor,
-
-                                    original: commit.author?.login,
-
-                                    reason: "GitHub commit author",
-                                },
-
-                                {
-                                    value: githubCommitter,
-
-                                    original: commit.committer?.login,
-
-                                    reason: "GitHub committer",
-                                },
-
-                                {
-                                    value: authorName,
-
-                                    original: commit.commit?.author?.name,
-
-                                    reason: "commit author",
-                                },
-
-                                {
-                                    value: committerName,
-
-                                    original: commit.commit?.committer?.name,
-
-                                    reason: "commit committer",
-                                },
-                            ];
-
-                            for (const field of fields) {
-                                if (field.value.includes("claude") || field.value.includes("codex")) {
-                                    return {
-                                        match: field.original,
-
-                                        reason: field.reason,
-                                    };
-                                }
-                            }
-
-                            if (message.includes("claude") || message.includes("codex")) {
-                                return {
-                                    match: message.includes("claude") ? "Claude" : "Codex",
-
-                                    reason: "commit message",
-                                };
-                            }
+                        if (contributors.length < 100) {
+                            break;
                         }
+
+                        page++;
                     }
 
                     return null;
                 } catch (error) {
-                    console.error("AI contributor check failed:", error);
+                    console.error("Contributor lookup failed:", error);
 
                     return null;
                 }
             }
+
             function hideReviewForm() {
                 reviewForm.classList.remove("visible");
 
@@ -776,10 +751,6 @@
                 reviewProject.value = url;
 
                 reviewForm.classList.add("visible");
-            }
-
-            function normalizeList(entries) {
-                return (entries || []).map(normalizeUrl).filter(Boolean);
             }
 
             async function checkUrl() {
@@ -824,7 +795,7 @@
                 checkButton.disabled = true;
 
                 try {
-                    const [list, aiContributor] = await Promise.all([loadList(), checkAIContributor(github)]);
+                    const list = await loadList();
 
                     const vibecoded = normalizeList(list.vibecoded);
 
@@ -833,6 +804,8 @@
                     const vibecodedUsers = normalizeList(list.vibecoded_users);
 
                     const humanUsers = normalizeList(list.human_users);
+
+                    const aiAccounts = normalizeContributorList(list.ai_contributors);
 
                     if (vibecoded.includes(comparisonUrl)) {
                         showResult(
@@ -890,13 +863,17 @@
                         return;
                     }
 
+                    status.textContent = "Checking contributors...";
+
+                    const aiContributor = await checkAIContributor(github, aiAccounts);
+
                     if (aiContributor) {
                         showResult(
                             "yes",
 
                             "Yes, It's Vibecoded",
 
-                            `${aiContributor} was found in the GitHub contributor list.`,
+                            `${aiContributor.login} is listed as a contributor to this repository.`,
 
                             comparisonUrl
                         );
@@ -926,7 +903,7 @@
                 } finally {
                     checkButton.disabled = false;
 
-                    if (status.textContent === "Checking...") {
+                    if (status.textContent === "Checking..." || status.textContent === "Checking contributors...") {
                         status.textContent = "";
                     }
                 }
