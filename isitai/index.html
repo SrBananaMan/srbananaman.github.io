@@ -998,121 +998,26 @@
                 return normalizeUrl(`https://github.com/${github.owner}/${github.repo}`);
             }
 
-            function getGitHubOwnerUrl(github) {
-                if (!github) {
-                    return null;
+            const ISITAI_API = "https://isitai-api.isitai-api.workers.dev";
+
+            async function lookupProject(repoUrl) {
+                const response = await fetch(`${ISITAI_API}/api/project?url=${encodeURIComponent(repoUrl)}`, {
+                    cache: "no-store",
+                });
+
+                let data = {};
+
+                try {
+                    data = await response.json();
+                } catch {
+                    data = {};
                 }
-
-                return normalizeUrl(`https://github.com/${github.owner}`);
-            }
-
-            async function loadList() {
-                const response = await fetch(
-                    "https://api.github.com/repos/SrBananaMan/isitai-database/contents/list.json",
-                    {
-                        headers: {
-                            Accept: "application/vnd.github.raw+json",
-                        },
-
-                        cache: "no-store",
-                    }
-                );
 
                 if (!response.ok) {
-                    throw new Error("Could not load confirmation list.");
+                    throw new Error(data.error || "Unable to check project.");
                 }
 
-                return await response.json();
-            }
-
-            function normalizeEntries(entries) {
-                return (entries || [])
-                    .map((entry) => {
-                        if (typeof entry === "string") {
-                            const url = normalizeUrl(entry);
-
-                            if (!url) {
-                                return null;
-                            }
-
-                            return {
-                                url,
-                                short: [],
-                                full: "",
-                                state: "Confirmed",
-                            };
-                        }
-
-                        if (!entry || typeof entry !== "object") {
-                            return null;
-                        }
-
-                        const url = normalizeUrl(entry.url || "");
-
-                        if (!url) {
-                            return null;
-                        }
-
-                        const short = Array.isArray(entry.short)
-                            ? entry.short.map((item) => String(item).trim()).filter(Boolean)
-                            : entry.short
-                              ? [String(entry.short).trim()]
-                              : [];
-
-                        return {
-                            url,
-                            short,
-                            full: entry.full ? String(entry.full).trim() : "",
-                            state: entry.state ? String(entry.state).trim() : "Confirmed",
-                        };
-                    })
-                    .filter(Boolean);
-            }
-
-            function findEntry(entries, url) {
-                return entries.find((entry) => entry.url === url) || null;
-            }
-
-            function normalizeUserList(entries) {
-                return (entries || [])
-                    .map((entry) => {
-                        if (typeof entry === "string") {
-                            const url = normalizeUrl(entry);
-
-                            return url
-                                ? {
-                                      url,
-                                      short: [],
-                                      full: "",
-                                      state: "Confirmed",
-                                  }
-                                : null;
-                        }
-
-                        if (!entry || typeof entry !== "object") {
-                            return null;
-                        }
-
-                        const url = normalizeUrl(entry.url || "");
-
-                        if (!url) {
-                            return null;
-                        }
-
-                        const short = Array.isArray(entry.short)
-                            ? entry.short.map((item) => String(item).trim()).filter(Boolean)
-                            : entry.short
-                              ? [String(entry.short).trim()]
-                              : [];
-
-                        return {
-                            url,
-                            short,
-                            full: entry.full ? String(entry.full).trim() : "",
-                            state: entry.state ? String(entry.state).trim() : "Confirmed",
-                        };
-                    })
-                    .filter(Boolean);
+                return data;
             }
 
             function resetReviewForm() {
@@ -1318,8 +1223,6 @@
 
                 const comparisonUrl = getRepositoryUrl(github);
 
-                const ownerUrl = getGitHubOwnerUrl(github);
-
                 status.className = "status";
 
                 status.textContent = "Checking...";
@@ -1333,83 +1236,56 @@
                 checkButton.disabled = true;
 
                 try {
-                    const list = await loadList();
+                    const entry = await lookupProject(comparisonUrl);
 
-                    const vibecoded = normalizeEntries(list.vibecoded);
+                    if (!entry.found) {
+                        showResult(
+                            "unknown",
+                            "Not Confirmed Yet",
+                            "This project has not been reviewed yet.",
+                            comparisonUrl
+                        );
 
-                    const human = normalizeEntries(list.human);
+                        showReviewForm(comparisonUrl);
 
-                    const vibecodedUsers = normalizeUserList(list.vibecoded_users);
+                        return;
+                    }
 
-                    const humanUsers = normalizeUserList(list.human_users);
+                    const info = {
+                        short: Array.isArray(entry.short) ? entry.short : [],
+                        full: entry.full || "",
+                        state: entry.state || "Active",
+                    };
 
-                    const vibecodedEntry = findEntry(vibecoded, comparisonUrl);
-
-                    if (vibecodedEntry) {
+                    if (entry.classification === "vibecoded") {
                         showResult(
                             "yes",
                             "Yes, It Uses AI",
-                            "This repository has been manually confirmed as vibecoded.",
+                            entry.source === "owner"
+                                ? "This repository is covered by a GitHub user or organization classification."
+                                : "This repository has been manually confirmed as vibecoded.",
                             comparisonUrl,
-                            vibecodedEntry
+                            info
                         );
 
                         return;
                     }
 
-                    const humanEntry = findEntry(human, comparisonUrl);
-
-                    if (humanEntry) {
+                    if (entry.classification === "human") {
                         showResult(
                             "no",
                             "No, It's Human Made",
-                            "This repository has been manually confirmed as human made.",
+                            entry.source === "owner"
+                                ? "This repository is covered by a GitHub user or organization classification."
+                                : "This repository has been manually confirmed as human made.",
                             comparisonUrl,
-                            humanEntry
+                            info
                         );
 
                         return;
                     }
 
-                    const vibecodedUserEntry = ownerUrl && findEntry(vibecodedUsers, ownerUrl);
-
-                    if (vibecodedUserEntry) {
-                        showResult(
-                            "yes",
-                            "Yes, It's Vibecoded",
-                            "Repositories from this GitHub user or organization are classified as vibecoded.",
-                            comparisonUrl,
-                            vibecodedUserEntry
-                        );
-
-                        return;
-                    }
-
-                    const humanUserEntry = ownerUrl && findEntry(humanUsers, ownerUrl);
-
-                    if (humanUserEntry) {
-                        showResult(
-                            "no",
-                            "No, It's Human Made",
-                            "Repositories from this GitHub user or organization are classified as human made.",
-                            comparisonUrl,
-                            humanUserEntry
-                        );
-
-                        return;
-                    }
-
-                    showResult(
-                        "unknown",
-
-                        "Not Confirmed Yet",
-
-                        "This project has not been reviewed yet.",
-
-                        comparisonUrl
-                    );
-
-                    showReviewForm(comparisonUrl);
+                    throw new Error("Unknown classification returned by API.");
                 } catch (error) {
                     console.error(error);
 
