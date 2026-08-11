@@ -273,6 +273,36 @@
                 background: rgba(117, 214, 111, 0.09);
             }
 
+            .complete-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 5px 9px;
+                border-radius: 999px;
+                font-size: 0.78rem;
+                font-weight: 850;
+                white-space: nowrap;
+            }
+
+            .complete-badge.complete {
+                color: var(--accent);
+                background: rgba(117, 214, 111, 0.09);
+            }
+
+            .complete-badge.incomplete {
+                color: var(--warning);
+                background: rgba(232, 198, 106, 0.09);
+            }
+
+            .complete-badge::before {
+                content: "";
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: currentColor;
+                flex-shrink: 0;
+            }
+
             .row-actions {
                 display: flex;
                 gap: 7px;
@@ -456,6 +486,7 @@
                                 <th id="name-heading">Repository</th>
                                 <th>Classification</th>
                                 <th>State</th>
+                                <th>Complete</th>
                                 <th>Updated</th>
                                 <th></th>
                             </tr>
@@ -536,7 +567,7 @@
         </div>
 
         <script>
-            const API_BASE = "https://isitai-api.isitai-api.workers.dev";
+            const API_BASE = "https://YOUR-WORKER.workers.dev";
 
             const loginView = document.getElementById("login-view");
 
@@ -705,6 +736,38 @@
                 renderRows();
             }
 
+            function getCompletionStatus(item) {
+                const missing = [];
+
+                if (!item.url || !String(item.url).trim()) {
+                    missing.push("GitHub URL");
+                }
+
+                if (item.classification !== "vibecoded" && item.classification !== "human") {
+                    missing.push("classification");
+                }
+
+                if (!item.state || !String(item.state).trim()) {
+                    missing.push("state");
+                }
+
+                if (
+                    !Array.isArray(item.short) ||
+                    item.short.filter((reason) => String(reason).trim().length > 0).length === 0
+                ) {
+                    missing.push("short reasons");
+                }
+
+                if (!item.full || !String(item.full).trim()) {
+                    missing.push("full description");
+                }
+
+                return {
+                    complete: missing.length === 0,
+                    missing,
+                };
+            }
+
             function renderRows() {
                 rows.innerHTML = "";
 
@@ -739,6 +802,22 @@
 
                     state.textContent = item.state || "Active";
 
+                    const completeCell = document.createElement("td");
+
+                    const completion = getCompletionStatus(item);
+
+                    const completeBadge = document.createElement("span");
+
+                    completeBadge.className = `complete-badge ${completion.complete ? "complete" : "incomplete"}`;
+
+                    completeBadge.textContent = completion.complete ? "Complete" : "Incomplete";
+
+                    if (!completion.complete) {
+                        completeBadge.title = "Missing: " + completion.missing.join(", ");
+                    }
+
+                    completeCell.appendChild(completeBadge);
+
                     const updated = document.createElement("td");
 
                     updated.textContent = item.updated_at || "";
@@ -760,7 +839,7 @@
                     wrap.appendChild(edit);
                     actions.appendChild(wrap);
 
-                    tr.append(name, classification, state, updated, actions);
+                    tr.append(name, classification, state, completeCell, updated, actions);
 
                     rows.appendChild(tr);
                 }
