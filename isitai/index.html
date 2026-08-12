@@ -7,11 +7,11 @@
 
         <title>Is It AI? - SrBananaMan</title>
 
-        <meta name="description" content="Check whether a GitHub project has been confirmed with AI usage" />
+        <meta name="description" content="Check whether a GitHub project has been confirmed as AI." />
 
         <meta property="og:title" content="Is It AI?" />
 
-        <meta property="og:description" content="Check whether a GitHub project has been confirmed with AI usage." />
+        <meta property="og:description" content="Check whether a GitHub project has been confirmed as AI." />
 
         <meta property="og:type" content="website" />
 
@@ -704,7 +704,7 @@
             <div class="page-heading">
                 <h1>Is It AI?</h1>
 
-                <p>Enter a GitHub repository URL to check whether it has been confirmed with AI usage.</p>
+                <p>Enter a GitHub repository URL to check whether it has been confirmed as AI.</p>
             </div>
 
             <div class="checker-card">
@@ -942,52 +942,78 @@
 
             let currentClassificationInfo = null;
 
-            function normalizeUrl(value) {
+            function prepareUrl(value) {
+                if (!value) {
+                    return null;
+                }
+
+                let input = String(value)
+                    .trim()
+                    .replace(/[\u200B-\u200D\uFEFF]/g, "");
+
+                if (!/^https?:\/\//i.test(input)) {
+                    input = "https://" + input;
+                }
+
                 try {
-                    const url = new URL(value.trim());
-
-                    url.search = "";
-
-                    url.hash = "";
-
-                    let normalized = url.toString();
-
-                    while (normalized.endsWith("/")) {
-                        normalized = normalized.slice(0, -1);
-                    }
-
-                    if (url.hostname.toLowerCase() === "github.com") {
-                        normalized = normalized.toLowerCase();
-                    }
-
-                    return normalized;
+                    return new URL(input);
                 } catch {
                     return null;
                 }
             }
 
-            function getGitHubRepository(value) {
-                try {
-                    const url = new URL(value);
-word
-                    if (url.hostname.toLowerCase() !== "github.com") {
-                        return null;
-                    }
+            function normalizeUrl(value) {
+                const url = prepareUrl(value);
 
-                    const parts = url.pathname.split("/").filter(Boolean);
-
-                    if (parts.length < 2) {
-                        return null;
-                    }
-
-                    return {
-                        owner: parts[0],
-
-                        repo: parts[1].replace(/\.git$/i, ""),
-                    };
-                } catch {
+                if (!url) {
                     return null;
                 }
+
+                url.search = "";
+                url.hash = "";
+
+                let normalized = url.toString();
+
+                while (normalized.endsWith("/")) {
+                    normalized = normalized.slice(0, -1);
+                }
+
+                return normalized;
+            }
+
+            function getGitHubRepository(value) {
+                const url = prepareUrl(value);
+
+                if (!url) {
+                    return null;
+                }
+
+                const hostname = url.hostname.toLowerCase().replace(/^www\./, "");
+
+                if (hostname !== "github.com") {
+                    return null;
+                }
+
+                const parts = url.pathname
+                    .split("/")
+                    .map((part) => part.trim())
+                    .filter(Boolean);
+
+                if (parts.length < 2) {
+                    return null;
+                }
+
+                const owner = parts[0];
+                const repo = parts[1].replace(/\.git$/i, "");
+
+                if (!owner || !repo) {
+                    return null;
+                }
+
+                return {
+                    owner,
+                    repo,
+                };
             }
 
             function getRepositoryUrl(github) {
@@ -995,7 +1021,7 @@ word
                     return null;
                 }
 
-                return normalizeUrl(`https://github.com/${github.owner}/${github.repo}`);
+                return `https://github.com/${github.owner.toLowerCase()}/${github.repo.toLowerCase()}`;
             }
 
             const ISITAI_API = "https://isitai-api.isitai-api.workers.dev";
@@ -1097,7 +1123,7 @@ word
                 }
 
                 if (type === "yes") {
-                    currentShareUrl = `${window.location.origin}/isitai/vibecoded/?url=${encodeURIComponent(url)}`;
+                    currentShareUrl = `${window.location.origin}/isitai/AI/?url=${encodeURIComponent(url)}`;
 
                     reportButton.textContent = "Report as Human Made";
 
@@ -1197,24 +1223,12 @@ word
             async function checkUrl() {
                 const originalValue = urlInput.value.trim();
 
-                const normalized = normalizeUrl(originalValue);
-
-                if (!normalized) {
-                    status.className = "status error";
-
-                    status.textContent = "Enter a valid URL.";
-
-                    result.className = "result";
-
-                    return;
-                }
-
-                const github = getGitHubRepository(normalized);
+                const github = getGitHubRepository(originalValue);
 
                 if (!github) {
                     status.className = "status error";
 
-                    status.textContent = "Enter a GitHub repository URL.";
+                    status.textContent = "Enter a GitHub repository URL like https://github.com/owner/repository.";
 
                     result.className = "result";
 
