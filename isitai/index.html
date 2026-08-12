@@ -307,7 +307,6 @@
                 display: flex;
             }
 
-            .share-button,
             .report-button {
                 padding: 11px 18px;
 
@@ -327,7 +326,6 @@
                     transform 0.2s ease;
             }
 
-            .share-button:hover,
             .report-button:hover {
                 background: rgba(255, 255, 255, 0.11);
 
@@ -677,7 +675,6 @@
                     flex-direction: column;
                 }
 
-                .share-button,
                 .report-button {
                     width: 100%;
                 }
@@ -736,7 +733,6 @@
                     <button class="more-info-button" id="more-info-button" type="button">More Info</button>
 
                     <div class="result-actions" id="result-actions">
-                        <button class="share-button" id="share-button" type="button">Copy Share Link</button>
 
                         <button class="report-button" id="report-button" type="button">Report</button>
                     </div>
@@ -892,8 +888,6 @@
 
             const resultActions = document.getElementById("result-actions");
 
-            const shareButton = document.getElementById("share-button");
-
             const reportButton = document.getElementById("report-button");
 
             const reviewForm = document.getElementById("review-form");
@@ -933,8 +927,6 @@
             const submitReportButton = document.getElementById("submit-report-button");
 
             const reportStatus = document.getElementById("report-status");
-
-            let currentShareUrl = "";
 
             let currentResultType = null;
 
@@ -1073,13 +1065,9 @@
             function resetActions() {
                 resultActions.classList.remove("visible");
 
-                currentShareUrl = "";
-
                 currentResultType = null;
 
                 currentProjectUrl = "";
-
-                shareButton.textContent = "Copy Share Link";
 
                 classificationDetails.classList.remove("visible");
                 classificationShortList.innerHTML = "";
@@ -1123,13 +1111,11 @@
                 }
 
                 if (type === "yes") {
-                    currentShareUrl = `${window.location.origin}/isitai/AI/?url=${encodeURIComponent(url)}`;
 
                     reportButton.textContent = "Report as Human Made";
 
                     resultActions.classList.add("visible");
                 } else if (type === "no") {
-                    currentShareUrl = `${window.location.origin}/isitai/human/?url=${encodeURIComponent(url)}`;
 
                     reportButton.textContent = "Report as AI";
 
@@ -1316,24 +1302,6 @@
                     }
                 }
             }
-
-            shareButton.addEventListener("click", async () => {
-                if (!currentShareUrl) {
-                    return;
-                }
-
-                try {
-                    await navigator.clipboard.writeText(currentShareUrl);
-
-                    shareButton.textContent = "Copied!";
-
-                    setTimeout(() => {
-                        shareButton.textContent = "Copy Share Link";
-                    }, 1200);
-                } catch {
-                    shareButton.textContent = "Copy Failed";
-                }
-            });
 
             moreInfoButton.addEventListener("click", openInfoModal);
 
