@@ -7,11 +7,11 @@
 
         <title>Is It AI? - SrBananaMan</title>
 
-        <meta name="description" content="Check whether a GitHub project has been confirmed as vibecoded." />
+        <meta name="description" content="Check whether a GitHub project has been confirmed with AI usage" />
 
         <meta property="og:title" content="Is It AI?" />
 
-        <meta property="og:description" content="Check whether a GitHub project has been confirmed as vibecoded." />
+        <meta property="og:description" content="Check whether a GitHub project has been confirmed with AI usage." />
 
         <meta property="og:type" content="website" />
 
@@ -704,7 +704,7 @@
             <div class="page-heading">
                 <h1>Is It AI?</h1>
 
-                <p>Enter a GitHub repository URL to check whether it has been confirmed as vibecoded.</p>
+                <p>Enter a GitHub repository URL to check whether it has been confirmed with AI usage.</p>
             </div>
 
             <div class="checker-card">
@@ -969,7 +969,7 @@
             function getGitHubRepository(value) {
                 try {
                     const url = new URL(value);
-
+word
                     if (url.hostname.toLowerCase() !== "github.com") {
                         return null;
                     }
@@ -1105,7 +1105,7 @@
                 } else if (type === "no") {
                     currentShareUrl = `${window.location.origin}/isitai/human/?url=${encodeURIComponent(url)}`;
 
-                    reportButton.textContent = "Report as Vibecoded";
+                    reportButton.textContent = "Report as AI";
 
                     resultActions.classList.add("visible");
                 }
@@ -1118,14 +1118,14 @@
 
                 const classification =
                     currentResultType === "yes"
-                        ? "Vibecoded"
+                        ? "AI"
                         : currentResultType === "no"
                           ? "Human Made"
                           : "Unconfirmed";
 
                 infoModalTitle.textContent =
-                    classification === "Vibecoded"
-                        ? "Why It's Classified as Vibecoded"
+                    classification === "AI"
+                        ? "Why It's Classified as AI"
                         : classification === "Human Made"
                           ? "Why It's Classified as Human Made"
                           : "Project Information";
@@ -1151,9 +1151,9 @@
                     return;
                 }
 
-                const currentClassification = currentResultType === "yes" ? "Vibecoded" : "Human Made";
+                const currentClassification = currentResultType === "yes" ? "AI" : "Human Made";
 
-                const requestedClassification = currentResultType === "yes" ? "Human Made" : "Vibecoded";
+                const requestedClassification = currentResultType === "yes" ? "Human Made" : "AI";
 
                 reportProject.value = currentProjectUrl;
 
@@ -1257,13 +1257,13 @@
                         state: entry.state || "Active",
                     };
 
-                    if (entry.classification === "vibecoded") {
+                    if (entry.classification === "AI") {
                         showResult(
                             "yes",
                             "Yes, It Uses AI",
                             entry.source === "owner"
                                 ? "This repository is covered by a GitHub user or organization classification."
-                                : "This repository has been manually confirmed as vibecoded.",
+                                : "This repository has been manually confirmed as AI.",
                             comparisonUrl,
                             info
                         );
