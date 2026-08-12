@@ -732,6 +732,7 @@
 
             const reviewDetailStatus = document.getElementById("review-detail-status");
 
+            let sessionToken = localStorage.getItem("isitai_admin_token") || "";
             let activeTab = "projects";
             let currentItems = [];
             let editing = null;
@@ -739,13 +740,19 @@
             let searchTimer = null;
 
             async function api(path, options = {}) {
+                const headers = {
+                    "Content-Type": "application/json",
+
+                    ...(options.headers || {}),
+                };
+
+                if (sessionToken) {
+                    headers.Authorization = `Bearer ${sessionToken}`;
+                }
+
                 const response = await fetch(API_BASE + path, {
                     ...options,
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json",
-                        ...(options.headers || {}),
-                    },
+                    headers,
                 });
 
                 let body = {};
@@ -755,7 +762,12 @@
                 } catch {}
 
                 if (response.status === 401) {
+                    sessionToken = "";
+
+                    localStorage.removeItem("isitai_admin_token");
+
                     showLogin();
+
                     throw new Error(body.error || "Please sign in.");
                 }
 
@@ -777,6 +789,11 @@
             }
 
             async function checkSession() {
+                if (!sessionToken) {
+                    showLogin();
+                    return;
+                }
+
                 try {
                     await api("/api/admin/me");
                     showApp();
@@ -789,15 +806,24 @@
             loginForm.addEventListener("submit", async (event) => {
                 event.preventDefault();
 
+                loginStatus.className = "status";
                 loginStatus.textContent = "Signing in...";
 
                 try {
-                    await api("/api/admin/login", {
+                    const loginResult = await api("/api/admin/login", {
                         method: "POST",
                         body: JSON.stringify({
                             password: password.value,
                         }),
                     });
+
+                    sessionToken = loginResult.token || "";
+
+                    if (!sessionToken) {
+                        throw new Error("Login succeeded but no session token was returned.");
+                    }
+
+                    localStorage.setItem("isitai_admin_token", sessionToken);
 
                     password.value = "";
                     loginStatus.textContent = "";
@@ -806,20 +832,16 @@
                     await loadEntries();
                 } catch (error) {
                     loginStatus.className = "status error";
-
                     loginStatus.textContent = error.message;
                 }
             });
 
-            logoutButton.addEventListener("click", async () => {
-                try {
-                    await api("/api/admin/logout", {
-                        method: "POST",
-                        body: "{}",
-                    });
-                } finally {
-                    showLogin();
-                }
+            logoutButton.addEventListener("click", () => {
+                sessionToken = "";
+
+                localStorage.removeItem("isitai_admin_token");
+
+                showLogin();
             });
 
             async function loadEntries() {
